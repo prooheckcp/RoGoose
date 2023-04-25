@@ -1,0 +1,29 @@
+{
+  "name": "RoGoose",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "RoGoose":{
+        "$path": "rogoose"
+      },
+      "Shared": {
+        "$path": "src/shared"
+      }
+    },
+
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    }
+  }
+}
