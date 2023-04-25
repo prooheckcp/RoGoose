@@ -1,7 +1,7 @@
 --!strict
 local Schema = {}
 Schema.__index = Schema
-Schema.type = "Schema"
+Schema.type = "DatabaseSchema"
 
 function Schema.new(schema: {[string]: any}): Schema
     local self = setmetatable({}, Schema)

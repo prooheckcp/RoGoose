@@ -3,6 +3,7 @@ local Schema = require(script.Parent.Schema)
 
 local Model = {}
 Model.__index = Model
+Model.type = "DatabaseModel"
 
 function Model.new(modelName: string, schema: Schema.Schema): Model
     local self = setmetatable({}, Model)
