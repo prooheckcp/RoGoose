@@ -1,19 +1,26 @@
 --!strict
 local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 
 local Signal = require(script.Vendor.Signal)
 local Schema = require(script.Classes.Schema)
 local Model = require(script.Classes.Model)
 local Profile = require(script.Classes.Profile)
-local DefaultSettings = require(script.Constants.DefaultSettings)
 local InternalSignals = require(script.Constants.InternalSignals)
+
+--functions
+local GeneratePlayerKey = require(script.Functions.GeneratePlayerKey)
 
 local ERROR_TAG: string = "[RoGoose] [ERROR]:"
 local SESSION_LOCK_DATASTORE: string = "SessionLockStore"
 
 local RoGoose = {}
+
+--Exposed types
+export type Schema = Schema.Schema
+export type Model = Model.Model
+export type Profile = Profile.Profile
+
 --Exposed Classes
 RoGoose.Schema = Schema
 RoGoose.Model = Model
@@ -24,13 +31,8 @@ RoGoose.PlayerRemoving = Signal.new() :: Signal.Signal<Player>
 
 --Caches
 RoGoose._cachedModels = {} :: {[string]: Model.Model}
-RoGoose._cachedProfiles = {} :: {}
 RoGoose._cachedDataStores = {} :: {[string]: DataStore}
 RoGoose._sessionLockDataStore = nil :: DataStore?
-
-function RoGoose:GetPlayerModel(model: Model.Model)
-    
-end
 
 function RoGoose:_ServerInit()
     InternalSignals.ModelCreated:Connect(function(model: Model)
@@ -52,25 +54,8 @@ function RoGoose:_ServerInit()
     self._sessionLockDataStore = DataStoreService:GetDataStore(SESSION_LOCK_DATASTORE)
 end
 
-function RoGoose:_ClientInit()
-    
-end
-
---[=[
-    Called whenever the user used a function at the wrong side.
-
-    E.g, if the function should only be called in the client and is called in the server then it will error!
-]=]
-function RoGoose:_WrongSideError()
-    
-end
-
 function RoGoose:_Error(message: string, level: number?): ()
     error(`{ERROR_TAG} {message}`, level or 1)
-end
-
-function RoGoose:_GeneratePlayerKey(player: Player): string
-    return tostring(player.UserId)..DefaultSettings.Key
 end
 
 --[[
@@ -78,24 +63,31 @@ end
 ]]
 
 function RoGoose:_GetPlayerSessionLockStatus(player: Player): number?
-    return self._sessionLockDataStore:UpdateAsync(self:_GeneratePlayerKey(player), function(state)
+    return self._sessionLockDataStore:UpdateAsync(GeneratePlayerKey(player), function(state)
         return state
     end)
 end
 
 function RoGoose:_LockSession(player: Player): ()
-    self._sessionLockDataStore:UpdateAsync(self:_GeneratePlayerKey(player), function(state)
+    self._sessionLockDataStore:UpdateAsync(GeneratePlayerKey(player), function()
         return os.time()
     end)
 end
 
 function RoGoose:_UnLockSession(player: Player): ()
-    self._sessionLockDataStore:UpdateAsync(self:_GeneratePlayerKey(player), function()
+    self._sessionLockDataStore:UpdateAsync(GeneratePlayerKey(player), function()
         return nil
     end)
 end
 
 function RoGoose:_PlayerAdded(player: Player)
+    local isSessionLocked: boolean = self:_GetPlayerSessionLockStatus() ~= nil
+
+    if isSessionLocked then
+        player:Kick("Please Rejoin!")
+        return
+    end
+
     self.PlayerAdded:Fire(player)
 end
 
@@ -117,10 +109,6 @@ function RoGoose:_LoadModel(model: Model.Model): ()
     self._cachedDataStores[model._name] = DataStoreService:GetDataStore(model._name)
 end
 
-if RunService:IsClient() then
-    RoGoose:_ClientInit()
-elseif RunService:IsServer() then
-    RoGoose:_ServerInit()
-end
+RoGoose:_ServerInit()
 
 return RoGoose
