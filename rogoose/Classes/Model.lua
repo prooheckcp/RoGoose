@@ -8,8 +8,11 @@ local Model = {}
 Model.__index = Model
 Model.type = "DatabaseModel"
 Model._profiles = {} :: {[string]: Profile.Profile}
+Model._schema = Schema.new({})
+Model._dataStore = nil :: DataStore?
+Model._name = ""
 
-function Model.new(modelName: string, schema: Schema.Schema): Model
+function Model.new(modelName: string, schema: Schema.Schema)
     local self = setmetatable({}, Model)
     self._name = modelName
     self._schema = schema
@@ -56,6 +59,6 @@ function Model.__tostring(model: Model): string
     return tostring(model._schema)
 end
 
-export type Model = typeof(Model.new("", Schema.new({})))
+export type Model = typeof(Model)
 
 return Model

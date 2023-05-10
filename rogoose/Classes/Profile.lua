@@ -1,5 +1,3 @@
---!strict
-
 local Profile = {}
 Profile.__index = Profile
 Profile.type = "DatabaseProfile"

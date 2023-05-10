@@ -81,7 +81,7 @@ function RoGoose:_UnLockSession(player: Player): ()
 end
 
 function RoGoose:_PlayerAdded(player: Player)
-    local isSessionLocked: boolean = self:_GetPlayerSessionLockStatus() ~= nil
+    local isSessionLocked: boolean = self:_GetPlayerSessionLockStatus(player) ~= nil
 
     if isSessionLocked then
         player:Kick("Please Rejoin!")
@@ -100,13 +100,14 @@ end
 ]=]
 function RoGoose:_LoadModel(model: Model.Model): ()
     if self._cachedModels[model._name] then
-        self:_Error(`Theres already a Model by the name of {model.Name}`)
+        self:_Error(`Theres already a Model by the name of {model._name}`)
         return
     end
 
+    local dataStore = DataStoreService:GetDataStore(model._name)
+    model._dataStore = dataStore
     self._cachedModels[model._name] = model
-
-    self._cachedDataStores[model._name] = DataStoreService:GetDataStore(model._name)
+    self._cachedDataStores[model._name] = dataStore
 end
 
 RoGoose:_ServerInit()

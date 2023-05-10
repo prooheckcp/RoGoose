@@ -5,8 +5,7 @@ local RoGoose = require(ReplicatedStorage.RoGoose)
 local ModelLoader = require(ServerScriptService.Server.ModelLoader)
 
 RoGoose.PlayerAdded:Connect(function(player: Player)
-    local playerCurrencies = RoGoose:GetPlayerModel(ModelLoader.Currencies)
-
+    ModelLoader.Currencies:
     print(player.Name, " joined the game")
 end)
 
