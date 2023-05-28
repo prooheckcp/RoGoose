@@ -128,7 +128,7 @@ function Model:_LoadProfile(player: Player): ()
     self:_GetAsync(key):andThen(function(result: any?)
         -- Create player's profile
         self:_CreateProfile(player, result, key)
-    end):catch(function()
+    end, function()
         --kick the player
         player:Kick(Errors.RobloxServersDown)
     end)
@@ -154,7 +154,7 @@ function Model:_CreateProfile(player: Player, data: any?, key: string): ()
         local schemaCopy: {[string]: any} = DeepCopy(self._schema:Get())
         profile._data = schemaCopy
     else
-        profile._data = AssertSchema(data)
+        profile._data = AssertSchema(self._schema:Get(), data)
     end
 
     self._profiles[key] = profile

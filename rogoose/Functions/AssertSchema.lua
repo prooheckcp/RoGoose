@@ -9,7 +9,7 @@ local DeepCopy = require(script.Parent.DeepCopy)
     @return {[string]: any}
 ]]
 local function AssertSchema(schema, userData): {[string]: any}
-    for key: string, value: any in pairs(schema) do
+    for key: string, value: any in schema do
         local userValue: any? = userData[key]
 
         if typeof(userValue) ~= typeof(value) then

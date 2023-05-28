@@ -98,9 +98,15 @@ function RoGoose:_AutoSaving(deltaTime: number): ()
     local savingDelta: number = currentTick - self._lastSave
     local players: {Player} = Players:GetPlayers()
     local playerCount: number = #players
+
+    if playerCount <= 0 then
+        return
+    end
+
     local intervalDelta: number = Settings.AutoSaveInterval/playerCount
 
     if savingDelta > intervalDelta then
+        print("save")
         self._lastSave = currentTick
         
         for _, player: Player in players do

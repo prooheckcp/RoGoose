@@ -11,14 +11,15 @@ local Settings = require(script.Parent.Parent.Constants.Settings)
 local function GetAsync(key: string, dataStore: DataStore): (boolean, any?)
     local function getAttempt()
         return pcall(function()
-            return dataStore:UpdateAsync(key, function(oldValue: any?)
-                return oldValue
-            end)
-        end)
+                    return dataStore:UpdateAsync(key, function(oldValue: any?)
+                        return oldValue
+                    end)
+                end)
     end
 
     local currentAttempts: number = 0
-    local success: boolean, value: any
+    local success: boolean, value: any = false, nil
+
     repeat
         currentAttempts += 1
 
