@@ -13,6 +13,7 @@ local Options = require(script.Structs.Options)
 local Trove = require(script.Vendor.Trove)
 local Signals = require(script.Constants.Signals)
 
+local Settings = require(script.Constants.Settings)
 
 local SESSION_LOCK_DATASTORE: string = "SessionLockStore"
 
@@ -42,6 +43,8 @@ RoGoose.ModelType = ModelType
 
 --Properties
 RoGoose._cachedModels = {} :: {[string]: Model.Model} -- Model Name / Model Instance
+RoGoose._currentSaveDelta = 0 :: number
+RoGoose._lastSave = tick() :: number
 
 --[=[
     This is the main function of the program and it is used to set up some events
@@ -69,8 +72,65 @@ function RoGoose:_Init(): ()
     end)
 
     Players.PlayerRemoving:Connect(function(player: Player)
-        -- Save stuff and session locking and bla bla bla
+        self:_PlayerLeft(player)
     end)
+
+    RunService.Heartbeat:Connect(function(deltaTime: number)
+        self:_AutoSaving(deltaTime)
+    end)
+
+    game:BindToClose(function() -- TO-DO
+        --self:_AutoSaving(Settings.AutoSaveInterval)
+    end)
+end
+
+--[=[
+    Function to manage an equal distribution for autosaving purposes
+
+    @private
+
+    @param deltaTime number -- The time between each heartbeat
+
+    @return ()
+]=]
+function RoGoose:_AutoSaving(deltaTime: number): ()
+    local currentTick: number = tick()
+    local savingDelta: number = currentTick - self._lastSave
+    local players: {Player} = Players:GetPlayers()
+    local playerCount: number = #players
+    local intervalDelta: number = Settings.AutoSaveInterval/playerCount
+
+    if savingDelta > intervalDelta then
+        self._lastSave = currentTick
+        
+        for _, player: Player in players do
+            for _, model: Model.Model in self._cachedModels do
+                if model._modelType ~= ModelType.Player then
+                    continue
+                end
+
+                local profile: Profile? = model:GetProfile(player)
+
+                if profile then
+                    continue
+                end
+
+                print("Profile Saved!")
+
+                local profileDelta: number = currentTick - profile._lastSave
+
+                if profileDelta > Settings.AutoSaveInterval * 0.85 then
+                    model:_SaveProfile(player)
+                end                
+            end
+        end
+    end
+
+    self._currentSaveDelta += deltaTime
+
+    if self._currentSaveDelta > Settings.AutoSaveInterval then -- Avoid overflow
+        self._currentSaveDelta -= Settings.AutoSaveInterval
+    end
 end
 
 --[=[
@@ -162,6 +222,12 @@ end
 
 --[=[
     Used as a shortcut to error() with a header
+
+    @private
+
+    @param message string -- The message to error with
+
+    @return ()
 ]=]
 function RoGoose:_Error(message: string): ()
     error(Errors.Header..message, 2)

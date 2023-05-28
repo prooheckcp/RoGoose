@@ -177,7 +177,13 @@ function Model:_SaveProfile(player: Player): (boolean, any?)
         return false, nil
     end
 
-    return UpdateAsync(profile._key, profile._data, self._dataStore)
+    local success: boolean, newValue: any = UpdateAsync(profile._key, profile._data, self._dataStore)
+
+    if success then
+        profile._lastSave = os.time()
+    end
+
+    return success, newValue
 end
 
 --[=[

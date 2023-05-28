@@ -7,6 +7,7 @@ Profile.__index = Profile
 Profile.type = "DatabaseProfile"
 Profile._Player = nil :: Player?
 Profile._data = {} :: {[string]: any}
+Profile._lastSave = tick() :: number
 Profile._key = "" :: string
 
 --[=[
