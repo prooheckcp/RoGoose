@@ -61,7 +61,7 @@ function RoGoose:_Init(): ()
     end)
 
     for _, player: Player in Players:GetPlayers() do
-        self:_LoadPlayer(player)
+        self:_PlayerJoined(player)
     end
 
     Players.PlayerAdded:Connect(function(player: Player)
@@ -133,7 +133,6 @@ end
     @return ()
 ]=]
 function RoGoose:_LoadPlayer(player: Player, model: Model.Model): ()
-    print("Load Player!")
     model:_LoadProfile(player)
 end
 

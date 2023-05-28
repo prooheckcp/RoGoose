@@ -7,6 +7,7 @@ local Profile = require(script.Parent.Profile)
 local ModelType = require(script.Parent.Parent.Enums.ModelType)
 local Promise = require(script.Parent.Parent.Vendor.Promise)
 local Trove = require(script.Parent.Parent.Vendor.Trove)
+local Signals = require(script.Parent.Parent.Constants.Signals)
 
 type Trove = typeof(Trove.new())
 
@@ -42,6 +43,8 @@ function Model.new(modelName: string, schema: Schema.Schema, _options: Options.O
     self._modelType = options.modelType
     self._trove = Trove.new()
     self._options = options
+
+    Signals.ModelCreated:Fire(self)
 
     return self
 end
