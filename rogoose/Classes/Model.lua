@@ -7,15 +7,19 @@ local Profile = require(script.Parent.Profile)
 local ModelType = require(script.Parent.Parent.Enums.ModelType)
 local Promise = require(script.Parent.Parent.Vendor.Promise)
 local Trove = require(script.Parent.Parent.Vendor.Trove)
+local Signal = require(script.Parent.Parent.Vendor.Signal)
 local Signals = require(script.Parent.Parent.Constants.Signals)
 local GetAsync = require(script.Parent.Parent.Functions.GetAsync)
 local Errors = require(script.Parent.Parent.Constants.Errors)
 
 type Trove = typeof(Trove.new())
+type Signal = typeof(Signal.new())
 
 local Model = {}
 Model.__index = Model
 Model.type = "DatabaseModel"
+Model.PlayerAdded = nil :: Signal?
+Model.PlayerRemoving = nil :: Signal?
 Model._trove = nil :: Trove
 Model._profiles = {} :: {[string]: Profile.Profile}
 Model._schema = Schema.new({})
@@ -45,6 +49,9 @@ function Model.new(modelName: string, schema: Schema.Schema, _options: Options.O
     self._modelType = options.modelType
     self._trove = Trove.new()
     self._options = options
+
+    self.PlayerAdded = Signal.new()
+    self.PlayerRemoving = Signal.new()
 
     Signals.ModelCreated:Fire(self)
 
@@ -92,19 +99,40 @@ end
 ]]
 
 --[=[
- ---
+    Loads a player's profile
+
+    @param player Player -- The player to load the profile for
+
+    @return ()
 ]=]
 function Model:_LoadProfile(player: Player): ()
     local key: string = player.UserId..self._options.savingKey
 
     self:_GetAsync(key):andThen(function(result: any?)
         -- Create player's profile
-        local profile: Profile.Profile = Profile.new()
-        
+        self:_CreateProfile(player, result)
     end):catch(function()
         --kick the player
         player:Kick(Errors.RobloxServersDown)
     end)
+end
+
+--[=[
+    Creates a player's profile inside of the cache of the Model
+
+    @param player Player -- The player to create the profile for
+    @param data any? -- The data to create the profile with
+
+    @return ()
+]=]
+function Model:_CreateProfile(player: Player, data: any?): ()
+    local firstTime: boolean = data == nil
+    local profile: Profile.Profile = Profile.new()
+    profile._Player = player
+
+    if firstTime then
+
+    end
 end
 
 function Model:_UnloadProfile(player: Player): ()
