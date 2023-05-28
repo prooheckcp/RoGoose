@@ -72,6 +72,10 @@ function RoGoose:_Init(): ()
             self:_LoadPlayer(player, model)
         end
     end)
+
+    Players.PlayerRemoving:Connect(function(player: Player)
+        -- Save stuff and session locking and bla bla bla
+    end)
 end
 
 --[=[
@@ -117,7 +121,7 @@ end
     @return ()
 ]=]
 function RoGoose:_LoadPlayer(player: Player, model: Model.Model): ()
-    
+    model:_LoadProfile(player)
 end
 
 --[=[

@@ -61,9 +61,12 @@ function Model.create(modelName: string, schema: Schema.Schema, _options: Option
     return Model.new(modelName, schema, _options)
 end
 
+function Model:Get(key: Player | string): table
+    
+end
 
-function Model:Find(key: Player | string): Profile.Profile?
-    return self._profiles[key]
+function Model:Find<T>(key: Player | string, index: string): T
+
 end
 
 
@@ -78,6 +81,11 @@ end
     Player Managed DataStore
     ====================
 ]]
+function Model:_LoadProfile(player: Player): ()
+    local profile: Profile.Profile = Profile.new()
+    self._profiles[player.UserId] = profile
+    profile:Load()
+end
 
 
 function Model.__tostring(model: Model): string
