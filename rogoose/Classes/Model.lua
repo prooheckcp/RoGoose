@@ -50,20 +50,8 @@ function Model:Find(key: Player | string): Profile.Profile?
     return self._profiles[key]
 end
 
-function Model:_GetKey(key: Player | string): string
-    local finalKey: string = ""
-
-    if typeof(key) == "Instance" and key:IsA("Player") then
-        finalKey = GeneratePlayerKey(key)
-    else
-        finalKey = key
-    end
-
-    return finalKey
-end
-
 function Model.__tostring(model: Model): string
-    return tostring(model._schema)
+    return model._name
 end
 
 export type Model = typeof(Model)
