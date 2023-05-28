@@ -1,6 +1,7 @@
 --!strict
 local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 local Signal = require(script.Vendor.Signal)
 local Schema = require(script.Classes.Schema)
@@ -8,10 +9,14 @@ local Model = require(script.Classes.Model)
 local Profile = require(script.Classes.Profile)
 local ModelType = require(script.Enums.ModelType)
 
+local Trove = require(script.Vendor.Trove)
+local Signals = require(script.Constants.Signals)
+
 --functions
 local GeneratePlayerKey = require(script.Functions.GeneratePlayerKey)
 
 local ERROR_TAG: string = "[RoGoose] [ERROR]:"
+local CLIENT_E
 local SESSION_LOCK_DATASTORE: string = "SessionLockStore"
 
 local RoGoose = {}
@@ -29,8 +34,10 @@ RoGoose.Model = Model
 --Exposed Enums
 RoGoose.ModelType = ModelType
 
---Signals
-RoGoose.PlayerAdded = Signal.new() :: Signal.Signal<Player>
-RoGoose.PlayerRemoving = Signal.new() :: Signal.Signal<Player>
+function RoGoose:_Init()
+
+end
+
+RoGoose:_Init()
 
 return RoGoose
