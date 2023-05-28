@@ -4,6 +4,7 @@ local DataStoreService = game:GetService("DataStoreService")
 local Schema = require(script.Parent.Schema)
 local Profile = require(script.Parent.Profile)
 local ModelType = require(script.Parent.Parent.Enums.ModelType)
+local Promise = require(script.Parent.Parent.Vendor.Promise)
 local GeneratePlayerKey = require(script.Parent.Parent.Functions.GeneratePlayerKey)
 
 local Model = {}
