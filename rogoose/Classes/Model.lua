@@ -11,6 +11,7 @@ local Signal = require(script.Parent.Parent.Vendor.Signal)
 local Signals = require(script.Parent.Parent.Constants.Signals)
 local GetAsync = require(script.Parent.Parent.Functions.GetAsync)
 local Errors = require(script.Parent.Parent.Constants.Errors)
+local DeepCopy = require(script.Parent.Parent.Functions.DeepCopy)
 
 type Trove = typeof(Trove.new())
 type Signal = typeof(Signal.new())
@@ -22,7 +23,7 @@ Model.PlayerAdded = nil :: Signal?
 Model.PlayerRemoving = nil :: Signal?
 Model._trove = nil :: Trove
 Model._profiles = {} :: {[string]: Profile.Profile}
-Model._schema = Schema.new({})
+Model._schema = Schema.new({}) :: Schema.Schema
 Model._dataStore = nil :: DataStore?
 Model._name = ""
 Model._trove = Trove.new() :: Trove
@@ -131,8 +132,13 @@ function Model:_CreateProfile(player: Player, data: any?): ()
     profile._Player = player
 
     if firstTime then
-
+        local schemaCopy: {[string]: any} = DeepCopy(self._schema:Get())
+        profile._data = schemaCopy
+    else
+        
     end
+
+    self.PlayerAdded:Fire(player, profile, firstTime)
 end
 
 function Model:_UnloadProfile(player: Player): ()

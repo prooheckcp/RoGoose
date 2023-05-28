@@ -36,6 +36,15 @@ function Schema.new(schema: {[string]: any}): Schema
     return self
 end
 
+--[=[
+    Gets the schema table
+
+    @return {[string]: any}
+]=]
+function Schema:Get(): {[string]: any}
+    return self._schema
+end
+
 function Schema.__tostring(schema: Schema): string
     return tostring(schema._schema)
 end
