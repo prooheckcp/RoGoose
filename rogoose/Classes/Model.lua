@@ -14,7 +14,7 @@ Model._profiles = {} :: {[string]: Profile.Profile}
 Model._schema = Schema.new({})
 Model._dataStore = nil :: DataStore?
 Model._name = ""
-Model._modelType = ModelType.String :: ModelType.ModelType
+Model._modelType = ModelType.Player :: ModelType.ModelType
 
 --[=[
     Creates a new instance of a Model
@@ -29,6 +29,7 @@ function Model.new(modelName: string, schema: Schema.Schema, modelType: ModelTyp
     local self = setmetatable({}, Model)
     self._name = modelName
     self._schema = schema
+    self._dataStore = DataStoreService:GetDataStore(modelName, )
     self._profiles = {}
     self._modelType = modelType
 
@@ -48,6 +49,7 @@ end
 function Model.create(modelName: string, schema: Schema.Schema, modelType: ModelType.ModelType)
     return Model.new(modelName, schema, modelType)
 end
+
 
 function Model:Find(key: Player | string): Profile.Profile?
     return self._profiles[key]
