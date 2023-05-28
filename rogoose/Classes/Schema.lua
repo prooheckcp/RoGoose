@@ -36,6 +36,10 @@ function Schema.new(schema: {[string]: any}): Schema
     return self
 end
 
+function Schema.__tostring(schema: Schema): string
+    return tostring(schema._schema)
+end
+
 export type Schema = typeof(Schema.new({}))
 
 return Schema
