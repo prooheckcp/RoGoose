@@ -6,7 +6,8 @@ local Profile = {}
 Profile.__index = Profile
 Profile.type = "DatabaseProfile"
 Profile._Player = nil :: Player?
-Profile._data = {}
+Profile._data = {} :: {[string]: any}
+Profile._key = "" :: string
 
 --[=[
     Creates a new instance of a Profile
@@ -16,10 +17,6 @@ function Profile.new(): Profile
     self._data = {}
 
     return self
-end
-
-function Profile.__tostring(profile: Profile)
-    return tostring(profile._data)
 end
 
 export type Profile = typeof(Profile.new())

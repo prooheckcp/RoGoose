@@ -1,5 +1,6 @@
 --!strict
 local DataStoreService = game:GetService("DataStoreService")
+local Players = game:GetService("Players")
 
 local Options = require(script.Parent.Parent.Structs.Options)
 local Schema = require(script.Parent.Schema)
@@ -15,13 +16,12 @@ local DeepCopy = require(script.Parent.Parent.Functions.DeepCopy)
 local AssertSchema = require(script.Parent.Parent.Functions.AssertSchema)
 
 type Trove = typeof(Trove.new())
-type Signal = typeof(Signal.new())
 
 local Model = {}
 Model.__index = Model
 Model.type = "DatabaseModel"
-Model.PlayerAdded = nil :: Signal?
-Model.PlayerRemoving = nil :: Signal?
+Model.PlayerAdded = nil :: Signal.Signal<Player, {[string]: any}, boolean>?
+Model.PlayerRemoving = nil :: Signal.Signal<Player, {[string]: any}>?
 Model._trove = nil :: Trove
 Model._profiles = {} :: {[string]: Profile.Profile}
 Model._schema = Schema.new({}) :: Schema.Schema
@@ -74,15 +74,29 @@ function Model.create(modelName: string, schema: Schema.Schema, _options: Option
     return Model.new(modelName, schema, _options)
 end
 
---[[
-function Model:Get(key: Player | string): table
-    
+--[=[
+    Gets a player's profile. If it returns nil it means that the player left the game
+
+    @yield
+    @param player Player -- The player to get the profile for
+
+    @return Profile
+]=]
+function Model:GetProfile(player: Player): Profile.Profile?
+    local profile: Profile.Profile?
+
+    repeat
+        profile = self._profiles[player.UserId..self._options.savingKey]
+        
+        if not profile then
+            task.wait()
+        end
+    until
+        profile ~= nil or not Players:GetPlayerByUserId(player.UserId)
+
+    return profile
 end
 
-function Model:Find<T>(key: Player | string, index: string): T
-
-end    
-]]
 function Model:_GetAsync(key: string)
     return Promise.new(function(resolve, reject)
         local success: boolean, result: any? = GetAsync(key, self._dataStore)
@@ -112,7 +126,7 @@ function Model:_LoadProfile(player: Player): ()
 
     self:_GetAsync(key):andThen(function(result: any?)
         -- Create player's profile
-        self:_CreateProfile(player, result)
+        self:_CreateProfile(player, result, key)
     end):catch(function()
         --kick the player
         player:Kick(Errors.RobloxServersDown)
@@ -122,14 +136,17 @@ end
 --[=[
     Creates a player's profile inside of the cache of the Model
 
+    @private
+
     @param player Player -- The player to create the profile for
     @param data any? -- The data to create the profile with
 
     @return ()
 ]=]
-function Model:_CreateProfile(player: Player, data: any?): ()
+function Model:_CreateProfile(player: Player, data: any?, key: string): ()
     local firstTime: boolean = data == nil
     local profile: Profile.Profile = Profile.new()
+    profile._key = key
     profile._Player = player
 
     if firstTime then
@@ -139,7 +156,25 @@ function Model:_CreateProfile(player: Player, data: any?): ()
         profile._data = AssertSchema(data)
     end
 
+    self._profiles[key] = profile
     self.PlayerAdded:Fire(player, profile, firstTime)
+end
+
+--[=[
+    Saves a player's profile
+
+    @param player Player -- The player to save the profile for
+
+    @return ()
+]=]
+function Model:_SaveProfile(player: Player): ()
+    local profile: Profile.Profile? = self:GetProfile(player)
+
+    if not profile then
+        return
+    end
+
+    
 end
 
 function Model:_UnloadProfile(player: Player): ()
