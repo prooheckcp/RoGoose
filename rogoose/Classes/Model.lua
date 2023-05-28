@@ -6,16 +6,21 @@ local Options = require(script.Parent.Parent.Structs.Options)
 local Schema = require(script.Parent.Schema)
 local Profile = require(script.Parent.Profile)
 local ModelType = require(script.Parent.Parent.Enums.ModelType)
+local Trove = require(script.Parent.Parent.Vendor.Trove)
 local Promise = require(script.Parent.Parent.Vendor.Promise)
 local GeneratePlayerKey = require(script.Parent.Parent.Functions.GeneratePlayerKey)
+
+type Trove = typeof(Trove.new())
 
 local Model = {}
 Model.__index = Model
 Model.type = "DatabaseModel"
+Model._trove = nil :: Trove
 Model._profiles = {} :: {[string]: Profile.Profile}
 Model._schema = Schema.new({})
 Model._dataStore = nil :: DataStore?
 Model._name = ""
+Model._trove = Trove.new() :: Trove
 Model._modelType = ModelType.Player :: ModelType.ModelType
 
 --[=[
@@ -36,6 +41,11 @@ function Model.new(modelName: string, schema: Schema.Schema, _options: Options.O
     self._dataStore = DataStoreService:GetDataStore(modelName, options.scope, options.options)
     self._profiles = {}
     self._modelType = options.modelType
+    self._trove = Trove.new()
+
+    if options.modelType == ModelType.Player then
+
+    end
 
     return self
 end
@@ -71,9 +81,7 @@ end
     Player Managed DataStore
     ====================
 ]]
-function Model:_PlayerJoined(player: Player)
 
-end
 
 function Model.__tostring(model: Model): string
     return model._name
