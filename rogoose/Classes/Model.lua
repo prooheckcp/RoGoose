@@ -1,6 +1,7 @@
 --!strict
 local Schema = require(script.Parent.Schema)
 local Profile = require(script.Parent.Profile)
+local ModelType = require(script.Parent.Parent.Enums.ModelType)
 local GeneratePlayerKey = require(script.Parent.Parent.Functions.GeneratePlayerKey)
 
 local Model = {}
@@ -10,30 +11,39 @@ Model._profiles = {} :: {[string]: Profile.Profile}
 Model._schema = Schema.new({})
 Model._dataStore = nil :: DataStore?
 Model._name = ""
+Model._modelType = ModelType.String :: ModelType.ModelType
 
-function Model.new(modelName: string, schema: Schema.Schema)
+--[=[
+    Creates a new instance of a Model
+
+    @param modelName string -- The name of the model
+    @param schema Schema -- The schema that will represent your model
+    @param modelType ModelType -- (optional)
+
+    @return Model
+]=]
+function Model.new(modelName: string, schema: Schema.Schema, modelType: ModelType.ModelType)
     local self = setmetatable({}, Model)
     self._name = modelName
     self._schema = schema
     self._profiles = {}
+    self._modelType = modelType
 
     return self
 end
 
-function Model:Create(key: Player | string, startingData: {[string]: any}): Profile.Profile
-    local finalKey: string = ""
+--[=[
+    Proxy for Model.new()
+    Used to clone Mongoose's syntax https://mongoosejs.com/docs/models.html
 
-    if typeof(key) == "Instance" and key:IsA("Player") then
-        finalKey = GeneratePlayerKey(key)
-    else
-        finalKey = key
-    end
+    @param modelName string -- The name of the model
+    @param schema Schema -- The schema that will represent your model
+    @param modelType ModelType -- (optional)
 
-    local newProfile: Profile.Profile = Profile.new()
-    newProfile._data = startingData
-    self._profiles[finalKey] = newProfile
-
-    return newProfile
+    @return Model
+]=]
+function Model.create(modelName: string, schema: Schema.Schema, modelType: ModelType.ModelType)
+    return Model.new(modelName, schema, modelType)
 end
 
 function Model:Find(key: Player | string): Profile.Profile?
