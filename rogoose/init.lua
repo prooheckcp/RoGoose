@@ -13,8 +13,6 @@ local Options = require(script.Structs.Options)
 local Trove = require(script.Vendor.Trove)
 local Signals = require(script.Constants.Signals)
 
---functions
-
 
 local SESSION_LOCK_DATASTORE: string = "SessionLockStore"
 
@@ -75,6 +73,13 @@ function RoGoose:_Init(): ()
     end)
 end
 
+--[=[
+    Called whenever the player joins the server
+
+    @param player Player
+
+    @return ()
+]=]
 function RoGoose:_PlayerJoined(player: Player): ()
     for _, model: Model.Model in self._cachedModels do
         if model._modelType ~= ModelType.Player then
