@@ -135,7 +135,7 @@ function Model:_CreateProfile(player: Player, data: any?): ()
         local schemaCopy: {[string]: any} = DeepCopy(self._schema:Get())
         profile._data = schemaCopy
     else
-        
+        profile._data = data
     end
 
     self.PlayerAdded:Fire(player, profile, firstTime)

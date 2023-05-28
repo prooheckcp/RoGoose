@@ -4,7 +4,7 @@ local RoGoose = require(ReplicatedStorage.RoGoose)
 
 local currenciesSchema = RoGoose.Schema.new({
     Gold = 0,
-    Cash = 20,
+    Cash = "",
 })
 
 local itemsSchema = RoGoose.Schema.new({
