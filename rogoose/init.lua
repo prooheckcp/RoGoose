@@ -1,4 +1,3 @@
---!strict
 local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -63,19 +62,27 @@ function RoGoose:_Init(): ()
         self:_AddModel(model)
     end)
 
-    Players.PlayerAdded:Connect(function(player: Player)
-        for _, model: Model.Model in self._cachedModels do
-            if model._modelType ~= ModelType.Player then
-                continue
-            end
+    for _, player: Player in Players:GetPlayers() do
+        self:_LoadPlayer(player)
+    end
 
-            self:_LoadPlayer(player, model)
-        end
+    Players.PlayerAdded:Connect(function(player: Player)
+        self:_PlayerJoined(player)
     end)
 
     Players.PlayerRemoving:Connect(function(player: Player)
         -- Save stuff and session locking and bla bla bla
     end)
+end
+
+function RoGoose:_PlayerJoined(player: Player): ()
+    for _, model: Model.Model in self._cachedModels do
+        if model._modelType ~= ModelType.Player then
+            continue
+        end
+
+        self:_LoadPlayer(player, model)
+    end
 end
 
 --[=[
@@ -121,6 +128,7 @@ end
     @return ()
 ]=]
 function RoGoose:_LoadPlayer(player: Player, model: Model.Model): ()
+    print("Load Player!")
     model:_LoadProfile(player)
 end
 

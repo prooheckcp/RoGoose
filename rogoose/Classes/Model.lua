@@ -5,6 +5,7 @@ local Options = require(script.Parent.Parent.Structs.Options)
 local Schema = require(script.Parent.Schema)
 local Profile = require(script.Parent.Profile)
 local ModelType = require(script.Parent.Parent.Enums.ModelType)
+local Promise = require(script.Parent.Parent.Vendor.Promise)
 local Trove = require(script.Parent.Parent.Vendor.Trove)
 
 type Trove = typeof(Trove.new())
@@ -18,6 +19,7 @@ Model._schema = Schema.new({})
 Model._dataStore = nil :: DataStore?
 Model._name = ""
 Model._trove = Trove.new() :: Trove
+Model._options = Options.new()
 Model._modelType = ModelType.Player :: ModelType.ModelType
 
 --[=[
@@ -39,10 +41,7 @@ function Model.new(modelName: string, schema: Schema.Schema, _options: Options.O
     self._profiles = {}
     self._modelType = options.modelType
     self._trove = Trove.new()
-
-    if options.modelType == ModelType.Player then
-
-    end
+    self._options = options
 
     return self
 end
@@ -61,20 +60,25 @@ function Model.create(modelName: string, schema: Schema.Schema, _options: Option
     return Model.new(modelName, schema, _options)
 end
 
+--[[
 function Model:Get(key: Player | string): table
     
 end
 
 function Model:Find<T>(key: Player | string, index: string): T
 
-end
+end    
+]]
 
 
---[=[
-    Used to destroy the model and all of its profiles
-]=]
-function Model:Destroy()
+function Model:_GetAsync(key: string)
+    return Promise.new(function(resolve, reject)
+        local a, b, c = self._dataStore:UpdateAsync(key, function(oldValue: any?)
+            return oldValue
+        end)
 
+        print(a, b, c)
+    end)
 end
 
 --[[
@@ -82,16 +86,9 @@ end
     ====================
 ]]
 function Model:_LoadProfile(player: Player): ()
-    local profile: Profile.Profile = Profile.new()
+    local key: string = player.UserId..self._options.savingKey
 
-    self._dataStore:UpdateAsync(player.UserId, function(data: table?): table
-        if data then
-            profile._data = data
-        end
-
-        return profile._data
-    end)
-
+    self:_GetAsync(key)
 end
 
 function Model.__tostring(model: Model): string
