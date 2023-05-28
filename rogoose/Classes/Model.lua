@@ -1,5 +1,6 @@
 --!strict
 local DataStoreService = game:GetService("DataStoreService")
+local Players = game:GetService("Players")
 
 local Options = require(script.Parent.Parent.Structs.Options)
 local Schema = require(script.Parent.Schema)
@@ -56,6 +57,22 @@ end
 
 function Model:Find(key: Player | string): Profile.Profile?
     return self._profiles[key]
+end
+
+
+--[=[
+    Used to destroy the model and all of its profiles
+]=]
+function Model:Destroy()
+
+end
+
+--[[
+    Player Managed DataStore
+    ====================
+]]
+function Model:_PlayerJoined(player: Player)
+
 end
 
 function Model.__tostring(model: Model): string
