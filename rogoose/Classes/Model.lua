@@ -8,6 +8,7 @@ local ModelType = require(script.Parent.Parent.Enums.ModelType)
 local Promise = require(script.Parent.Parent.Vendor.Promise)
 local Trove = require(script.Parent.Parent.Vendor.Trove)
 local Signals = require(script.Parent.Parent.Constants.Signals)
+local GetAsync = require(script.Parent.Parent.Functions.GetAsync)
 
 type Trove = typeof(Trove.new())
 
@@ -74,21 +75,13 @@ end
 ]]
 function Model:_GetAsync(key: string)
     return Promise.new(function(resolve, reject)
-        local function getAttempt()
-            return pcall(function()
-                return self._dataStore:UpdateAsync(key, function(oldValue: any?)
-                    return oldValue
-                end)
-            end)
+        local success: boolean, result: any? = GetAsync(key, self._dataStore)
+
+        if success then
+            resolve(result)
+        else
+            reject(result)
         end
-
-        local success: boolean, value: any
-        repeat
-            success, value = getAttempt()
-        until
-            success
-
-
     end)
 end
 

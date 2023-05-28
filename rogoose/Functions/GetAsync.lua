@@ -8,7 +8,7 @@ local Settings = require(script.Parent.Parent.Constants.Settings)
 
     @return (boolean, any) -- (success -> False means error from the server, value)
 ]]
-local function GetAsync(key: string, dataStore: DataStore): (boolean, any)
+local function GetAsync(key: string, dataStore: DataStore): (boolean, any?)
     local function getAttempt()
         return pcall(function()
             return dataStore:UpdateAsync(key, function(oldValue: any?)
