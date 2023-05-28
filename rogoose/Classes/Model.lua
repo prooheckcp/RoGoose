@@ -9,6 +9,7 @@ local Promise = require(script.Parent.Parent.Vendor.Promise)
 local Trove = require(script.Parent.Parent.Vendor.Trove)
 local Signals = require(script.Parent.Parent.Constants.Signals)
 local GetAsync = require(script.Parent.Parent.Functions.GetAsync)
+local Errors = require(script.Parent.Parent.Constants.Errors)
 
 type Trove = typeof(Trove.new())
 
@@ -89,10 +90,25 @@ end
     Player Managed DataStore
     ====================
 ]]
+
+--[=[
+ ---
+]=]
 function Model:_LoadProfile(player: Player): ()
     local key: string = player.UserId..self._options.savingKey
 
-    self:_GetAsync(key)
+    self:_GetAsync(key):andThen(function(result: any?)
+        -- Create player's profile
+        local profile: Profile.Profile = Profile.new()
+        
+    end):catch(function()
+        --kick the player
+        player:Kick(Errors.RobloxServersDown)
+    end)
+end
+
+function Model:_UnloadProfile(player: Player): ()
+    
 end
 
 function Model.__tostring(model: Model): string

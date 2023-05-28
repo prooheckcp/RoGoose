@@ -133,6 +133,10 @@ end
     @return ()
 ]=]
 function RoGoose:_LoadPlayer(player: Player, model: Model.Model): ()
+    if not Players:GetPlayerByUserId(player.UserId) then -- Player disconnected
+        return
+    end
+
     model:_LoadProfile(player)
 end
 
