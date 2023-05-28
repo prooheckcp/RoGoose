@@ -14,6 +14,7 @@ local GetAsync = require(script.Parent.Parent.Functions.GetAsync)
 local Errors = require(script.Parent.Parent.Constants.Errors)
 local DeepCopy = require(script.Parent.Parent.Functions.DeepCopy)
 local AssertSchema = require(script.Parent.Parent.Functions.AssertSchema)
+local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
 
 type Trove = typeof(Trove.new())
 
@@ -167,14 +168,14 @@ end
 
     @return ()
 ]=]
-function Model:_SaveProfile(player: Player): ()
+function Model:_SaveProfile(player: Player): (boolean, any?)
     local profile: Profile.Profile? = self:GetProfile(player)
 
     if not profile then
-        return
+        return false, nil
     end
 
-    
+    return UpdateAsync(profile._key, profile._data, self._dataStore)
 end
 
 function Model:_UnloadProfile(player: Player): ()
