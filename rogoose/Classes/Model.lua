@@ -164,6 +164,8 @@ end
 --[=[
     Saves a player's profile
 
+    @private
+
     @param player Player -- The player to save the profile for
 
     @return ()
@@ -178,8 +180,24 @@ function Model:_SaveProfile(player: Player): (boolean, any?)
     return UpdateAsync(profile._key, profile._data, self._dataStore)
 end
 
+--[=[
+    Unloads a player's profile
+
+    @private
+
+    @param player Player -- The player to unload the profile for
+
+    @return ()
+]=]
 function Model:_UnloadProfile(player: Player): ()
-    
+    local profile: Profile.Profile? = self:GetProfile(player)
+
+    if not profile then
+        return
+    end
+
+    self:_SaveProfile(player)
+    self._profiles[profile._key] = nil
 end
 
 function Model.__tostring(model: Model): string

@@ -76,6 +76,7 @@ end
 --[=[
     Called whenever the player joins the server
 
+    @private
     @param player Player
 
     @return ()
@@ -87,6 +88,25 @@ function RoGoose:_PlayerJoined(player: Player): ()
         end
 
         self:_LoadPlayer(player, model)
+    end
+end
+
+--[=[
+    Called whenever a player leaves the game
+
+    @private
+
+    @param player Player
+
+    @return ()
+]=]
+function RoGoose:_PlayerLeft(player: Player): ()
+    for _, model: Model.Model in self._cachedModels do
+        if model._modelType ~= ModelType.Player then
+            continue
+        end
+
+        model:_UnloadProfile(player)
     end
 end
 
