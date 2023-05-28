@@ -18,11 +18,14 @@ Options.scope = "global" :: string
 Options.options = nil :: Instance?
 --@prop modelType ModelType -- The type of model you want to create. Using Player as a key will result in a player specific model
 Options.modelType = ModelType.Player :: ModelType.ModelType
+--@prop savingKey string -- The key to save the data under. This will be used to save the data under a specific key in the DataStore
+Options.savingKey = "" :: string
 
 export type Options = {
     scope: string,
     options: Instance?,
     modelType: ModelType.ModelType,
+    savingKey: string,
 }
 
 --[=[
@@ -53,7 +56,8 @@ function Options.new(options: Options?): Options
     local _options = {
         scope = options.scope or "global",
         options = options.options or nil,
-        modelType = options.modelType or ModelType.Player
+        modelType = options.modelType or ModelType.Player,
+        savingKey = options.savingKey or ""
     }
 
     return _options

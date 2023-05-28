@@ -83,10 +83,16 @@ end
 ]]
 function Model:_LoadProfile(player: Player): ()
     local profile: Profile.Profile = Profile.new()
-    self._profiles[player.UserId] = profile
-    profile:Load()
-end
 
+    self._dataStore:UpdateAsync(player.UserId, function(data: table?): table
+        if data then
+            profile._data = data
+        end
+
+        return profile._data
+    end)
+
+end
 
 function Model.__tostring(model: Model): string
     return model._name
