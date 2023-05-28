@@ -12,6 +12,7 @@ local Signals = require(script.Parent.Parent.Constants.Signals)
 local GetAsync = require(script.Parent.Parent.Functions.GetAsync)
 local Errors = require(script.Parent.Parent.Constants.Errors)
 local DeepCopy = require(script.Parent.Parent.Functions.DeepCopy)
+local AssertSchema = require(script.Parent.Parent.Functions.AssertSchema)
 
 type Trove = typeof(Trove.new())
 type Signal = typeof(Signal.new())
@@ -135,7 +136,7 @@ function Model:_CreateProfile(player: Player, data: any?): ()
         local schemaCopy: {[string]: any} = DeepCopy(self._schema:Get())
         profile._data = schemaCopy
     else
-        profile._data = data
+        profile._data = AssertSchema(data)
     end
 
     self.PlayerAdded:Fire(player, profile, firstTime)
