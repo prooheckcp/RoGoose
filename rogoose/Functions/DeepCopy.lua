@@ -1,3 +1,8 @@
+--[[
+    This function is used to create a deep copy of a table.
+    This is useful for when you want to create a copy of a table without
+    modifying the original table
+]]
 local function DeepCopy(tab)
     local copy = {}
     
