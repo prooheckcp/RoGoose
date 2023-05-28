@@ -1,6 +1,5 @@
 --!strict
 local Schema = require(script.Parent.Schema)
-local InternalSignals = require(script.Parent.Parent.Constants.InternalSignals)
 local Profile = require(script.Parent.Profile)
 local GeneratePlayerKey = require(script.Parent.Parent.Functions.GeneratePlayerKey)
 
@@ -17,8 +16,6 @@ function Model.new(modelName: string, schema: Schema.Schema)
     self._name = modelName
     self._schema = schema
     self._profiles = {}
-    
-    InternalSignals.ModelCreated:Fire(self)
 
     return self
 end
