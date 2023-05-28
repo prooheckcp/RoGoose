@@ -1,14 +1,11 @@
 --!strict
 local DataStoreService = game:GetService("DataStoreService")
-local Players = game:GetService("Players")
 
 local Options = require(script.Parent.Parent.Structs.Options)
 local Schema = require(script.Parent.Schema)
 local Profile = require(script.Parent.Profile)
 local ModelType = require(script.Parent.Parent.Enums.ModelType)
 local Trove = require(script.Parent.Parent.Vendor.Trove)
-local Promise = require(script.Parent.Parent.Vendor.Promise)
-local GeneratePlayerKey = require(script.Parent.Parent.Functions.GeneratePlayerKey)
 
 type Trove = typeof(Trove.new())
 
