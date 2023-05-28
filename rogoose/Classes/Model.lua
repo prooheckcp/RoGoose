@@ -1,4 +1,6 @@
 --!strict
+local DataStoreService = game:GetService("DataStoreService")
+
 local Schema = require(script.Parent.Schema)
 local Profile = require(script.Parent.Profile)
 local ModelType = require(script.Parent.Parent.Enums.ModelType)
