@@ -72,15 +72,23 @@ function Model:Find<T>(key: Player | string, index: string): T
 
 end    
 ]]
-
-
 function Model:_GetAsync(key: string)
     return Promise.new(function(resolve, reject)
-        local a, b, c = self._dataStore:UpdateAsync(key, function(oldValue: any?)
-            return oldValue
-        end)
+        local function getAttempt()
+            return pcall(function()
+                return self._dataStore:UpdateAsync(key, function(oldValue: any?)
+                    return oldValue
+                end)
+            end)
+        end
 
-        print(a, b, c)
+        local success: boolean, value: any
+        repeat
+            success, value = getAttempt()
+        until
+            success
+
+
     end)
 end
 
