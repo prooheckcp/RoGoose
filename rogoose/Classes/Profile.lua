@@ -21,7 +21,7 @@ function Profile.new(): Profile
 end
 
 function Profile:Get<T>(index: string)
-    
+
 end
 
 function Profile:Set<T>(index: string, value: T)
@@ -33,6 +33,10 @@ function Profile:AddElement<T>(index: string, value: T)
 end
 
 function Profile:RemoveElement<T>(index: string, value: T)
+
+end
+
+function Profile:Exists(index: string): boolean
 
 end
 
