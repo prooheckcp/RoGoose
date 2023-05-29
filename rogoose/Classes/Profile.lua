@@ -1,3 +1,5 @@
+local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
+
 --[=[
     Profiles consist of data containers to contain data for a specific player
     They are automatically managed by RoGoose allowing you to focus on what matters
@@ -20,8 +22,48 @@ function Profile.new(): Profile
     return self
 end
 
-function Profile:Get<T>(index: string)
+--[=[
+    Gets the player that the profile belongs to
 
+    ```lua
+    local player: Player = profile:GetPlayer()
+    print(player.Name) -- Prints the player's name
+    ```
+
+    @return Player
+]=]
+function Profile:GetPlayer(): Player
+    return self._Player
+end
+
+--[=[
+    Gets the data with the given index from the profile
+
+    ```lua
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local gold: number = profile:Get("Gold")
+    local yen: number = profile:Get("Wallet.Yen")
+
+    print(gold) -- 5
+    print(yen) -- 3
+    ```
+
+    @param index string -- The path to the data
+
+    @return T -- T being whatever value type that you are getting
+]=
+]=]
+function Profile:Get<T>(index: string)
+    GetNestedValue(self._data, index)
 end
 
 function Profile:Set<T>(index: string, value: T)
