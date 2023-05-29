@@ -75,6 +75,31 @@ function Model.create(modelName: string, schema: Schema.Schema, _options: Option
     return Model.new(modelName, schema, _options)
 end
 
+
+function Model:Get<T>(key: string | Player, index: string): T
+    if typeof(key) == "Instance"
+end
+
+function Model:Set<T>(): T
+
+end
+
+function Model:AddElement<T>(): T
+
+end
+
+function Model:RemoveElement<T>(): T
+
+end
+
+function Model:Increment()
+
+end
+
+function Model:Subtract()
+
+end
+
 --[=[
     Gets a player's profile. If it returns nil it means that the player left the game
 
@@ -98,6 +123,15 @@ function Model:GetProfile(player: Player): Profile.Profile?
     return profile
 end
 
+--[=[
+    Gets async from the DataStore with the given key
+
+    @private
+
+    @param key string -- The key to get the data from
+
+    @return Promise
+]=]
 function Model:_GetAsync(key: string)
     return Promise.new(function(resolve, reject)
         local success: boolean, result: any? = GetAsync(key, self._dataStore)
