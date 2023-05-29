@@ -15,6 +15,7 @@ local Errors = require(script.Parent.Parent.Constants.Errors)
 local DeepCopy = require(script.Parent.Parent.Functions.DeepCopy)
 local AssertSchema = require(script.Parent.Parent.Functions.AssertSchema)
 local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
+local KeyType = require(script.Parent.Parent.Functions.KeyType)
 
 type Trove = typeof(Trove.new())
 
@@ -75,9 +76,20 @@ function Model.create(modelName: string, schema: Schema.Schema, _options: Option
     return Model.new(modelName, schema, _options)
 end
 
+--[=[
+    Gets the data with the given key from the data store
 
+    @param key string | Player -- The key to get the data from
+    @param index string -- The path to the data
+
+    @return T -- T being whatever value type that you are getting
+]=]
 function Model:Get<T>(key: string | Player, index: string): T
-    if typeof(key) == "Instance"
+    if KeyType(key) == "Player" then
+        
+    else
+
+    end
 end
 
 function Model:Set<T>(): T

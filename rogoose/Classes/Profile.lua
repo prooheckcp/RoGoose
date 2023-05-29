@@ -20,6 +20,30 @@ function Profile.new(): Profile
     return self
 end
 
+function Profile:Get<T>(index: string)
+    
+end
+
+function Profile:Set<T>(index: string, value: T)
+
+end
+
+function Profile:AddElement<T>(index: string, value: T)
+
+end
+
+function Profile:RemoveElement<T>(index: string, value: T)
+
+end
+
+function Profile:Increment(index: string, value: number)
+
+end
+
+function Profile:Subtract(index: string, value: number)
+
+end
+
 export type Profile = typeof(Profile.new())
 
 return Profile
