@@ -1,6 +1,7 @@
 local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
 local Warning = require(script.Parent.Parent.Functions.Warning)
 local Warnings = require(script.Parent.Parent.Constants.Warnings)
+local GetType = require(script.Parent.Parent.Functions.GetType)
 
 --[=[
     Profiles consist of data containers to contain data for a specific player
@@ -109,18 +110,19 @@ end
 
     @return T -- The previous value that was set
 ]=]
-function Profile:Set<T>(index: string, newValue: T): T
+function Profile:Set<T>(index: string, newValue: T): T?
     local oldValue: T, outterScore: {[string]: any}, warningMessage: string? = GetNestedValue(self._data, index)
     local strings: {string} = string.split(index, ".")
     local lastIndex: string = strings[#strings]
 
-    if typeof(newValue) ~= typeof(oldValue) then
-        warn(Warnings.ChangeWrongType.." from type "..typeof(oldValue).." to type "..typeof(newValue))
-        return oldValue
-    end
-
     if warningMessage then
         Warning(warningMessage)
+        return nil
+    end
+
+    if GetType(newValue) ~= GetType(oldValue) then
+        warn(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(newValue))
+        return nil
     end
 
     outterScore[lastIndex] = newValue
@@ -128,12 +130,116 @@ function Profile:Set<T>(index: string, newValue: T): T
     return oldValue
 end
 
-function Profile:AddElement<T>(index: string, value: T)
+--[=[
+    Adds an element to an array in the given index
 
+    ```lua
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Inventory = {
+                {
+                    Name = "Sword",
+                    Damage = 5
+                },
+            }
+        }
+    ]]
+
+    local inventory: {Name: string, Damage: number} = profile:Get("Inventory")
+
+    print(inventory[1].Name) -- Sword
+
+    profile:AddElement("Inventory", {
+        Name = "Shield",
+        Defense = 5
+    })
+
+    print(inventory[2].Name) -- Shield
+    ```
+
+    @param index string -- The path to the data
+    @param value T -- The value to add
+
+    @return any -- The array that the value was added to
+]=]
+function Profile:AddElement<T>(index: string, value: T): any
+    local array: any, _, warningMessage: string? = GetNestedValue(self._data, index)
+
+    if warningMessage then
+        Warning(warningMessage)
+        return
+    end
+
+    if GetType(array) ~= "table" then
+        warn("Can only add elements to tables")
+        return
+    end
+
+    table.insert(array, value)
+
+    return array
 end
 
-function Profile:RemoveElement<T>(index: string, value: T)
+--[=[
+    Removes an element from an array in the given index by the given array index
 
+    ```lua
+
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Inventory = {
+                {
+                    Name = "Sword",
+                    Damage = 5
+                },
+                {
+                    Name = "Shield",
+                    Defense = 5
+                }
+            }
+        }
+    ]]
+    
+    local inventory: {Name: string, Damage: number} = profile:Get("Inventory")
+
+    print(inventory[1].Name) -- Sword
+
+    profile:RemoveElementByIndex("Inventory", 1) -- Removes the first element in the array
+
+    print(inventory[1].Name) -- Shield
+    ```
+
+    @param index string -- The path to the data
+    @param arrayIndex number -- The index of the array to remove
+
+    @return any -- The array that the value was removed from
+]=]
+function Profile:RemoveElementByIndex<T>(index: string, arrayIndex: any): any
+    local array: any, _, warningMessage: string? = GetNestedValue(self._data, index)
+
+    if warningMessage then
+        Warning(warningMessage)
+    end
+
+    if GetType(array) ~= "table" then
+        warn("Can only add elements to tables")
+        return
+    end
+
+    for key: any in array do
+        if key ~= arrayIndex then
+            continue
+        end
+
+        array[key] = nil
+        break
+    end
+
+    return array
 end
 
 --[=[
@@ -200,7 +306,7 @@ end
 function Profile:Increment(index: string, amount: number): (number, number)
     local currentValue: any = self:Get(index)
 
-    if typeof(currentValue) ~= "number" then
+    if GetType(currentValue) ~= "number" then
         warn(Warnings.NumberWrongType)
         return 0, 0
     end
@@ -240,7 +346,7 @@ end
 function Profile:Subtract(index: string, amount: number): (number, number)
     local currentValue: any = self:Get(index)
 
-    if typeof(currentValue) ~= "number" then
+    if GetType(currentValue) ~= "number" then
         warn(Warnings.NumberWrongType)
         return 0, 0
     end
