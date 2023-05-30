@@ -114,6 +114,11 @@ function Profile:Set<T>(index: string, newValue: T): T
     local strings: {string} = string.split(index, ".")
     local lastIndex: string = strings[#strings]
 
+    if typeof(newValue) ~= typeof(oldValue) then
+        warn(Warnings.ChangeWrongType.." from type "..typeof(oldValue).." to type "..typeof(newValue))
+        return oldValue
+    end
+
     if warningMessage then
         Warning(warningMessage)
     end
