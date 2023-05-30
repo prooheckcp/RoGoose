@@ -72,8 +72,54 @@ function Profile:Get<T>(index: string): T
     return value
 end
 
-function Profile:Set<T>(index: string, value: T)
+--[=[
+    Sets a players profile value into a new value. It also returns the previous value
+    that is had before it was set
 
+    ```lua
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local gold: number = profile:Get("Gold")
+    local yen: number = profile:Get("Wallet.Yen")
+
+    print(gold) -- 5
+    print(yen) -- 3
+
+    local previousGold: number = profile:Set("Gold", 10)
+    local previousYen: number = profile:Set("Wallet.Yen", 5)
+
+    print(previousGold) -- 5
+    print(previousYen) -- 3
+
+    print(profile:Get("Gold")) -- 10
+    print(profile:Get("Wallet.Yen")) -- 5
+    ```
+
+    @param index string -- The path to the data
+    @param newValue T -- The new value to set
+
+    @return T -- The previous value that was set
+]=]
+function Profile:Set<T>(index: string, newValue: T): T
+    local oldValue: T, outterScore: {[string]: any}, warningMessage: string? = GetNestedValue(self._data, index)
+    local strings: {string} = string.split(index, ".")
+    local lastIndex: string = strings[#strings]
+
+    if warningMessage then
+        Warning(warningMessage)
+    end
+
+    outterScore[lastIndex] = newValue
+
+    return oldValue
 end
 
 function Profile:AddElement<T>(index: string, value: T)
@@ -84,8 +130,38 @@ function Profile:RemoveElement<T>(index: string, value: T)
 
 end
 
-function Profile:Exists(index: string): boolean
+--[=[
+    Will return whether or not the given value exists within the player's profile
 
+    
+    ```lua
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local yenExists: boolean = profile:Exists("Wallet.Yen")
+
+    print(exists) -- true
+
+    local goldExists: boolean = profile:Exists("Wallet.Gold")
+
+    print(goldExists) -- false
+    ```
+
+    @param index string -- The path to the data
+
+    @return boolean -- Whether or not the value exists
+]=]
+function Profile:Exists(index: string): boolean
+    local value: any = GetNestedValue(self._data, index)
+
+    return value ~= nil
 end
 
 function Profile:Increment(index: string, value: number)
