@@ -92,8 +92,8 @@ end
         }
     ]]
 
-    local gold: number = profile:Get("Gold")
-    local yen: number = profile:Get("Wallet.Yen")
+    local gold: number = model:Get("MyModelKey", "Gold")
+    local yen: number = model:Get("MyModelKey", "Wallet.Yen")
 
     print(gold) -- 5
     print(yen) -- 3
@@ -131,20 +131,20 @@ end
         }
     ]]
 
-    local gold: number = profile:Get("Gold")
-    local yen: number = profile:Get("Wallet.Yen")
+    local gold: number = model:Get("MyModelKey", "Gold")
+    local yen: number = model:Get("MyModelKey", "Wallet.Yen")
 
     print(gold) -- 5
     print(yen) -- 3
 
-    local previousGold: number = profile:Set("Gold", 10)
-    local previousYen: number = profile:Set("Wallet.Yen", 5)
+    local previousGold: number = model:Set("MyModelKey", "Gold", 10)
+    local previousYen: number = model:Set("MyModelKey", "Wallet.Yen", 5)
 
     print(previousGold) -- 5
     print(previousYen) -- 3
 
-    print(profile:Get("Gold")) -- 10
-    print(profile:Get("Wallet.Yen")) -- 5
+    print(model:Get("MyModelKey", "Gold")) -- 10
+    print(model:Get("MyModelKey", "Wallet.Yen")) -- 5
     ```
 
     @param key string | Player -- The key to set the data to
@@ -182,11 +182,11 @@ end
         }
     ]]
 
-    local inventory: {Name: string, Damage: number} = profile:Get("Inventory")
+    local inventory: {Name: string, Damage: number} = model:Get("MyModelKey", "Inventory")
 
     print(inventory[1].Name) -- Sword
 
-    profile:AddElement("Inventory", {
+    model:AddElement("MyModelKey", "Inventory", {
         Name = "Shield",
         Defense = 5
     })
@@ -234,11 +234,11 @@ end
         }
     ]]
     
-    local inventory: {Name: string, Damage: number} = profile:Get("Inventory")
+    local inventory: {Name: string, Damage: number} = model:Get("MyModelKey", "Inventory")
 
     print(inventory[1].Name) -- Sword
 
-    profile:RemoveElementByIndex("Inventory", 1) -- Removes the first element in the array
+    model:RemoveElementByIndex("MyModelKey", "Inventory", 1) -- Removes the first element in the array
 
     print(inventory[1].Name) -- Shield
     ```
@@ -276,11 +276,11 @@ end
         }
     ]]
 
-    local yenExists: boolean = profile:Exists("Wallet.Yen")
+    local yenExists: boolean = model:Exists("MyModelKey", "Wallet.Yen")
 
     print(exists) -- true
 
-    local goldExists: boolean = profile:Exists("Wallet.Gold")
+    local goldExists: boolean = model:Exists("MyModelKey", "Wallet.Gold")
 
     print(goldExists) -- false
     ```
@@ -318,7 +318,7 @@ end
         }
     ]]
 
-    local previousGold: number, currentGold: number = profile:Increment("Gold", 2)
+    local previousGold: number, currentGold: number = model:Increment("MyModelKey", "Gold", 2)
 
     print(previousGold) -- 5
     print(currentGold) -- 7
@@ -358,7 +358,7 @@ end
         }
     ]]
 
-    local previousGold: number, currentGold: number = profile:Subtract("Gold", 2)
+    local previousGold: number, currentGold: number = model:Subtract("MyModelKey", "Gold", 2)
 
     print(previousGold) -- 5
     print(currentGold) -- 3
@@ -407,6 +407,10 @@ function Model:GetProfile(player: Player): Profile.Profile?
     end
 
     return profile
+end
+
+function Model:SaveProfile()
+    -- TO - DO
 end
 
 --[=[

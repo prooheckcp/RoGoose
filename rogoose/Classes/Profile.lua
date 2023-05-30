@@ -356,6 +356,10 @@ function Profile:Subtract(index: string, amount: number): (number, number)
     return currentValue, self:Get(index)
 end
 
+function Profile:Save()
+    -- TO DO
+end
+
 export type Profile = typeof(Profile.new())
 
 return Profile
