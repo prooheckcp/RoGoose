@@ -16,6 +16,8 @@ local DeepCopy = require(script.Parent.Parent.Functions.DeepCopy)
 local AssertSchema = require(script.Parent.Parent.Functions.AssertSchema)
 local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
 local KeyType = require(script.Parent.Parent.Functions.KeyType)
+local Warning = require(script.Parent.Parent.Functions.Warning)
+local Warnings = require(script.Parent.Parent.Constants.Warnings)
 
 type Trove = typeof(Trove.new())
 
@@ -84,32 +86,88 @@ end
 
     @return T -- T being whatever value type that you are getting
 ]=]
-function Model:Get<T>(key: string | Player, index: string): T
+function Model:Get<T>(key: string | Player, index: string): T?
     if KeyType(key) == "Player" then
-        
+        local profile: Profile.Profile = self:GetProfile(key)
+
+        if profile == nil then return nil end
+
+        profile:Get(index)
     else
 
     end
 end
 
-function Model:Set<T>(): T
+function Model:Set<T>(key: string | Player, index: string, newValue: T): T?
+    if KeyType(key) == "Player" then
+        local profile: Profile.Profile = self:GetProfile(key)
 
+        if profile == nil then return nil end
+
+        profile:Set(index, newValue)
+    else
+
+    end
 end
 
-function Model:AddElement<T>(): T
+function Model:AddElement<T>(key: string | Player, index: string, value: T): any
+    if KeyType(key) == "Player" then
+        local profile: Profile.Profile = self:GetProfile(key)
 
+        if profile == nil then return nil end
+
+        profile:AddElement(index, value)
+    else
+
+    end
 end
 
-function Model:RemoveElement<T>(): T
+function Model:RemoveElementByIndex<T>(key: string | Player, index: string, arrayIndex: any): any
+    if KeyType(key) == "Player" then
+        local profile: Profile.Profile = self:GetProfile(key)
 
+        if profile == nil then return nil end
+
+        profile:RemoveElementByIndex(index, arrayIndex)
+    else
+
+    end
 end
 
-function Model:Increment()
+function Model:Exists(key: string | Player, index: string): boolean
+    if KeyType(key) == "Player" then
+        local profile: Profile.Profile = self:GetProfile(key)
 
+        if profile == nil then return false end
+
+        profile:Exists(index)
+    else
+
+    end
 end
 
-function Model:Subtract()
+function Model:Increment(key: string | Player, index: string, amount: number): (number, number)
+    if KeyType(key) == "Player" then
+        local profile: Profile.Profile = self:GetProfile(key)
 
+        if profile == nil then return 0, 0 end
+
+        profile:Increment(index, amount)
+    else
+
+    end
+end
+
+function Model:Subtract(key: string | Player, index: string, amount: number): (number, number)
+    if KeyType(key) == "Player" then
+        local profile: Profile.Profile = self:GetProfile(key)
+
+        if profile == nil then return 0, 0 end
+
+        profile:Subtract(index, amount)
+    else
+
+    end
 end
 
 --[=[
@@ -131,6 +189,10 @@ function Model:GetProfile(player: Player): Profile.Profile?
         end
     until
         profile ~= nil or not Players:GetPlayerByUserId(player.UserId)
+
+    if profile == nil then
+        Warning(Warnings.PlayerIsNotInTheSocket)
+    end
 
     return profile
 end

@@ -64,7 +64,7 @@ end
 
     @return T -- T being whatever value type that you are getting
 ]=]
-function Profile:Get<T>(index: string): T
+function Profile:Get<T>(index: string): T?
     local value: T, _, warningMessage: string? = GetNestedValue(self._data, index)
 
     if warningMessage then
