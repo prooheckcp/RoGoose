@@ -1,4 +1,5 @@
 local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
+local Warning = require(script.Parent.Parent.Functions.Warning)
 
 --[=[
     Profiles consist of data containers to contain data for a specific player
@@ -60,10 +61,15 @@ end
     @param index string -- The path to the data
 
     @return T -- T being whatever value type that you are getting
-]=
 ]=]
-function Profile:Get<T>(index: string)
-    GetNestedValue(self._data, index)
+function Profile:Get<T>(index: string): T
+    local value: T, _, warningMessage: string? = GetNestedValue(self._data, index)
+
+    if warningMessage then
+        Warning(warningMessage)
+    end
+
+    return value
 end
 
 function Profile:Set<T>(index: string, value: T)
