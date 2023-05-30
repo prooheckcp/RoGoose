@@ -1,5 +1,6 @@
 local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
 local Warning = require(script.Parent.Parent.Functions.Warning)
+local Warnings = require(script.Parent.Parent.Constants.Warnings)
 
 --[=[
     Profiles consist of data containers to contain data for a specific player
@@ -164,12 +165,84 @@ function Profile:Exists(index: string): boolean
     return value ~= nil
 end
 
-function Profile:Increment(index: string, value: number)
+--[=[
+    Increments the number value at the given index by the given amount. It will
+    also return the previous value (before incrementing) and the new value (after incrementing)
 
+    ```lua
+
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local previousGold: number, currentGold: number = profile:Increment("Gold", 2)
+
+    print(previousGold) -- 5
+    print(currentGold) -- 7
+    ```
+
+    @param index string -- The path to the data
+    @param amount number -- The amount to subtract
+
+    @return number, number -- The previous value and the new value
+]=]
+function Profile:Increment(index: string, amount: number): (number, number)
+    local currentValue: any = self:Get(index)
+
+    if typeof(currentValue) ~= "number" then
+        warn(Warnings.NumberWrongType)
+        return 0, 0
+    end
+
+    self:Set(index, currentValue + amount)
+
+    return currentValue, self:Get(index)
 end
 
-function Profile:Subtract(index: string, value: number)
+--[=[
+    Subtracts the number value at the given index by the given amount. It will
+    also return the previous value (before subtracting) and the new value (after subtracting)
 
+    ```lua
+
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local previousGold: number, currentGold: number = profile:Subtract("Gold", 2)
+
+    print(previousGold) -- 5
+    print(currentGold) -- 3
+    ```
+
+    @param index string -- The path to the data
+    @param amount number -- The amount to subtract
+
+    @return number, number -- The previous value and the new value
+]=]
+function Profile:Subtract(index: string, amount: number): (number, number)
+    local currentValue: any = self:Get(index)
+
+    if typeof(currentValue) ~= "number" then
+        warn(Warnings.NumberWrongType)
+        return 0, 0
+    end
+
+    self:Set(index, currentValue - amount)
+
+    return currentValue, self:Get(index)
 end
 
 export type Profile = typeof(Profile.new())
