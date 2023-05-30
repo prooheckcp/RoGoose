@@ -79,7 +79,25 @@ function Model.create(modelName: string, schema: Schema.Schema, _options: Option
 end
 
 --[=[
-    Gets the data with the given key from the data store
+    Gets the data with the given index from the profile
+
+    ```lua
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local gold: number = profile:Get("Gold")
+    local yen: number = profile:Get("Wallet.Yen")
+
+    print(gold) -- 5
+    print(yen) -- 3
+    ```
 
     @param key string | Player -- The key to get the data from
     @param index string -- The path to the data
@@ -98,6 +116,43 @@ function Model:Get<T>(key: string | Player, index: string): T?
     end
 end
 
+--[=[
+    Sets a players profile value into a new value. It also returns the previous value
+    that is had before it was set
+
+    ```lua
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local gold: number = profile:Get("Gold")
+    local yen: number = profile:Get("Wallet.Yen")
+
+    print(gold) -- 5
+    print(yen) -- 3
+
+    local previousGold: number = profile:Set("Gold", 10)
+    local previousYen: number = profile:Set("Wallet.Yen", 5)
+
+    print(previousGold) -- 5
+    print(previousYen) -- 3
+
+    print(profile:Get("Gold")) -- 10
+    print(profile:Get("Wallet.Yen")) -- 5
+    ```
+
+    @param key string | Player -- The key to set the data to
+    @param index string -- The path to the data
+    @param newValue T -- The new value to set
+
+    @return T -- The previous value that was set
+]=]
 function Model:Set<T>(key: string | Player, index: string, newValue: T): T?
     if KeyType(key) == "Player" then
         local profile: Profile.Profile = self:GetProfile(key)
@@ -110,6 +165,41 @@ function Model:Set<T>(key: string | Player, index: string, newValue: T): T?
     end
 end
 
+--[=[
+    Adds an element to an array in the given index
+
+    ```lua
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Inventory = {
+                {
+                    Name = "Sword",
+                    Damage = 5
+                },
+            }
+        }
+    ]]
+
+    local inventory: {Name: string, Damage: number} = profile:Get("Inventory")
+
+    print(inventory[1].Name) -- Sword
+
+    profile:AddElement("Inventory", {
+        Name = "Shield",
+        Defense = 5
+    })
+
+    print(inventory[2].Name) -- Shield
+    ```
+
+    @param key string | Player -- The key to get the data from
+    @param index string -- The path to the data
+    @param value T -- The value to add
+
+    @return any -- The array that the value was added to
+]=]
 function Model:AddElement<T>(key: string | Player, index: string, value: T): any
     if KeyType(key) == "Player" then
         local profile: Profile.Profile = self:GetProfile(key)
@@ -122,6 +212,43 @@ function Model:AddElement<T>(key: string | Player, index: string, value: T): any
     end
 end
 
+--[=[
+    Removes an element from an array in the given index by the given array index
+
+    ```lua
+
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Inventory = {
+                {
+                    Name = "Sword",
+                    Damage = 5
+                },
+                {
+                    Name = "Shield",
+                    Defense = 5
+                }
+            }
+        }
+    ]]
+    
+    local inventory: {Name: string, Damage: number} = profile:Get("Inventory")
+
+    print(inventory[1].Name) -- Sword
+
+    profile:RemoveElementByIndex("Inventory", 1) -- Removes the first element in the array
+
+    print(inventory[1].Name) -- Shield
+    ```
+
+    @param key string | Player -- The key to get the data from
+    @param index string -- The path to the data
+    @param arrayIndex number -- The index of the array to remove
+
+    @return any -- The array that the value was removed from
+]=]
 function Model:RemoveElementByIndex<T>(key: string | Player, index: string, arrayIndex: any): any
     if KeyType(key) == "Player" then
         local profile: Profile.Profile = self:GetProfile(key)
@@ -134,6 +261,35 @@ function Model:RemoveElementByIndex<T>(key: string | Player, index: string, arra
     end
 end
 
+--[=[
+    Will return whether or not the given value exists within the player's profile
+
+    
+    ```lua
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local yenExists: boolean = profile:Exists("Wallet.Yen")
+
+    print(exists) -- true
+
+    local goldExists: boolean = profile:Exists("Wallet.Gold")
+
+    print(goldExists) -- false
+    ```
+
+    @param key string | Player -- The key to get the data from
+    @param index string -- The path to the data
+
+    @return boolean -- Whether or not the value exists
+]=]
 function Model:Exists(key: string | Player, index: string): boolean
     if KeyType(key) == "Player" then
         local profile: Profile.Profile = self:GetProfile(key)
@@ -146,6 +302,34 @@ function Model:Exists(key: string | Player, index: string): boolean
     end
 end
 
+--[=[
+    Increments the number value at the given index by the given amount. It will
+    also return the previous value (before incrementing) and the new value (after incrementing)
+
+    ```lua
+
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local previousGold: number, currentGold: number = profile:Increment("Gold", 2)
+
+    print(previousGold) -- 5
+    print(currentGold) -- 7
+    ```
+
+    @param key string | Player -- The key to get the data from
+    @param index string -- The path to the data
+    @param amount number -- The amount to subtract
+
+    @return number, number -- The previous value and the new value
+]=]
 function Model:Increment(key: string | Player, index: string, amount: number): (number, number)
     if KeyType(key) == "Player" then
         local profile: Profile.Profile = self:GetProfile(key)
@@ -158,6 +342,34 @@ function Model:Increment(key: string | Player, index: string, amount: number): (
     end
 end
 
+--[=[
+    Subtracts the number value at the given index by the given amount. It will
+    also return the previous value (before subtracting) and the new value (after subtracting)
+
+    ```lua
+
+    --[[
+        Imagine the following schema
+        {
+            Gold = 5,
+            Wallet = {
+                Yen = 3
+            }
+        }
+    ]]
+
+    local previousGold: number, currentGold: number = profile:Subtract("Gold", 2)
+
+    print(previousGold) -- 5
+    print(currentGold) -- 3
+    ```
+
+    @param key string | Player -- The key to get the data from
+    @param index string -- The path to the data
+    @param amount number -- The amount to subtract
+
+    @return number, number -- The previous value and the new value
+]=]
 function Model:Subtract(key: string | Player, index: string, amount: number): (number, number)
     if KeyType(key) == "Player" then
         local profile: Profile.Profile = self:GetProfile(key)
