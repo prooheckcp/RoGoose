@@ -123,7 +123,7 @@ function RoGoose:_AutoSaving(deltaTime: number): ()
                 local profileDelta: number = currentTick - profile._lastSave
 
                 if profileDelta > Settings.AutoSaveInterval * 0.85 then
-                    model:_SaveProfile(player)
+                    model:SaveProfile(player)
                 end                
             end
         end
