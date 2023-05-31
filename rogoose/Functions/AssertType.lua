@@ -10,10 +10,11 @@ local GetType = require(script.Parent.GetType)
     @param variableName string
     @param expectedType string
 
-    @return nil
+    @return ()
 ]]
 local function AssertType(variable: any, variableName: string, expectedType: string)
-    assert(GetType(variable) == expectedType, `{variableName} must be a {expectedType}; got {GetType(variable)}`)
+    local calledFrom: string = debug.traceback(nil, 3)
+    assert(GetType(variable) == expectedType, `{calledFrom}{variableName} must be a {expectedType}; got {GetType(variable)}`)
 end
 
 return AssertType
