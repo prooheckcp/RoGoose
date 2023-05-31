@@ -3,6 +3,7 @@ local Warning = require(script.Parent.Parent.Functions.Warning)
 local Warnings = require(script.Parent.Parent.Constants.Warnings)
 local GetType = require(script.Parent.Parent.Functions.GetType)
 local AssertType = require(script.Parent.Parent.Functions.AssertType)
+local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
 
 --[=[
     Profiles consist of data containers to contain data for a specific player
@@ -373,8 +374,27 @@ function Profile:Subtract(index: string, amount: number): (number, number)
     return currentValue, self:Get(index)
 end
 
-function Profile:Save()
-    -- TO DO
+--[=[
+    Updates the profile with the given data. This will overwrite the current data in the DataStore
+
+    ```lua
+    local profile: Profile.Profile? = model:GetProfile(player)
+
+    if profile then
+        profile:Save() -- Saved on the DataStore!
+    end
+    ```
+
+    @return boolean, any? -- Whether or not the save was successful and the new value
+]=]
+function Profile:Save(): (boolean, any?)
+    local success: boolean, newValue: any = UpdateAsync(self._key, self._data, self._dataStore)
+
+    if success then
+        self._lastSave = os.time()
+    end
+
+    return success, newValue
 end
 
 export type Profile = typeof(Profile.new())

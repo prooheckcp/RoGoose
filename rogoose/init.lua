@@ -120,8 +120,6 @@ function RoGoose:_AutoSaving(deltaTime: number): ()
                     continue
                 end
 
-                print("Profile Saved!")
-
                 local profileDelta: number = currentTick - profile._lastSave
 
                 if profileDelta > Settings.AutoSaveInterval * 0.85 then

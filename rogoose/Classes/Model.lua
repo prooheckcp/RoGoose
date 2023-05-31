@@ -409,8 +409,30 @@ function Model:GetProfile(player: Player): Profile.Profile?
     return profile
 end
 
-function Model:SaveProfile()
+--[=[
+
+]=]
+function Model:SaveAllProfiles()
     -- TO - DO
+end
+
+--[=[
+    Saves a player's profile
+
+    @private
+
+    @param player Player -- The player to save the profile for
+
+    @return boolean, any -- Whether or not the save was successful and the error if it wasn't
+]=]
+function Model:SaveProfile(player: Player): (boolean, any?)
+    local profile: Profile.Profile? = self:GetProfile(player)
+
+    if not profile then
+        return false, nil
+    end
+
+    return profile:Save()
 end
 
 --[=[
@@ -486,31 +508,6 @@ function Model:_CreateProfile(player: Player, data: any?, key: string): ()
 end
 
 --[=[
-    Saves a player's profile
-
-    @private
-
-    @param player Player -- The player to save the profile for
-
-    @return ()
-]=]
-function Model:_SaveProfile(player: Player): (boolean, any?)
-    local profile: Profile.Profile? = self:GetProfile(player)
-
-    if not profile then
-        return false, nil
-    end
-
-    local success: boolean, newValue: any = UpdateAsync(profile._key, profile._data, self._dataStore)
-
-    if success then
-        profile._lastSave = os.time()
-    end
-
-    return success, newValue
-end
-
---[=[
     Unloads a player's profile
 
     @private
@@ -526,7 +523,7 @@ function Model:_UnloadProfile(player: Player): ()
         return
     end
 
-    self:_SaveProfile(player)
+    self:SaveProfile(player)
     self._profiles[profile._key] = nil
 end
 
