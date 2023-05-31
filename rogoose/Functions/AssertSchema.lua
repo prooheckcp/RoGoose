@@ -21,7 +21,7 @@ local function AssertSchema(schema, userData): {[string]: any}
         end
 
         if typeof(value) == "table" then
-            AssertSchema(value, userValue)
+            AssertSchema(value, userData[key])
         end
     end
 

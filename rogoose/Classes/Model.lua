@@ -113,7 +113,7 @@ function Model:Get<T>(key: string | Player, index: string): T?
 
         profile:Get(index)
     else
-        print(self:_GetAsync(key :: string):await())
+       
     end
 end
 
