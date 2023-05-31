@@ -416,6 +416,10 @@ end
     @return ()
 ]=]
 function Model:SaveAllProfiles(): ()
+    if self._modelType ~= ModelType.Player then
+        error(Errors.CannotCallSaveAllProfilesOnNonPlayerModel)
+    end
+    
     for _, profile: Profile.Profile in self._profiles do
         profile:Save()
     end
