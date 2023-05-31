@@ -2,6 +2,7 @@ local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
 local Warning = require(script.Parent.Parent.Functions.Warning)
 local Warnings = require(script.Parent.Parent.Constants.Warnings)
 local GetType = require(script.Parent.Parent.Functions.GetType)
+local AssertType = require(script.Parent.Parent.Functions.AssertType)
 
 --[=[
     Profiles consist of data containers to contain data for a specific player
@@ -65,6 +66,8 @@ end
     @return T -- T being whatever value type that you are getting
 ]=]
 function Profile:Get<T>(index: string): T?
+    AssertType(index, "index", "string")
+
     local value: T, _, warningMessage: string? = GetNestedValue(self._data, index)
 
     if warningMessage then
@@ -111,6 +114,8 @@ end
     @return T -- The previous value that was set
 ]=]
 function Profile:Set<T>(index: string, newValue: T): T?
+    AssertType(index, "index", "string")
+
     local oldValue: T, outterScore: {[string]: any}, warningMessage: string? = GetNestedValue(self._data, index)
     local strings: {string} = string.split(index, ".")
     local lastIndex: string = strings[#strings]
@@ -165,6 +170,8 @@ end
     @return any -- The array that the value was added to
 ]=]
 function Profile:AddElement<T>(index: string, value: T): any
+    AssertType(index, "index", "string")
+
     local array: any, _, warningMessage: string? = GetNestedValue(self._data, index)
 
     if warningMessage then
@@ -219,6 +226,8 @@ end
     @return any -- The array that the value was removed from
 ]=]
 function Profile:RemoveElementByIndex<T>(index: string, arrayIndex: any): any
+    AssertType(index, "index", "string")
+
     local array: any, _, warningMessage: string? = GetNestedValue(self._data, index)
 
     if warningMessage then
@@ -271,6 +280,8 @@ end
     @return boolean -- Whether or not the value exists
 ]=]
 function Profile:Exists(index: string): boolean
+    AssertType(index, "index", "string")
+
     local value: any = GetNestedValue(self._data, index)
 
     return value ~= nil
@@ -304,6 +315,9 @@ end
     @return number, number -- The previous value and the new value
 ]=]
 function Profile:Increment(index: string, amount: number): (number, number)
+    AssertType(index, "index", "string")
+    AssertType(amount, "amount", "number")
+
     local currentValue: any = self:Get(index)
 
     if GetType(currentValue) ~= "number" then
@@ -344,6 +358,9 @@ end
     @return number, number -- The previous value and the new value
 ]=]
 function Profile:Subtract(index: string, amount: number): (number, number)
+    AssertType(index, "index", "string")
+    AssertType(amount, "amount", "number")
+    
     local currentValue: any = self:Get(index)
 
     if GetType(currentValue) ~= "number" then
