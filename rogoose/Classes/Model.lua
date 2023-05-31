@@ -18,6 +18,7 @@ local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
 local KeyType = require(script.Parent.Parent.Functions.KeyType)
 local Warning = require(script.Parent.Parent.Functions.Warning)
 local Warnings = require(script.Parent.Parent.Constants.Warnings)
+local AssertModelType = require(script.Parent.Parent.Functions.AssertModelType)
 
 type Trove = typeof(Trove.new())
 
@@ -391,6 +392,8 @@ end
     @return Profile
 ]=]
 function Model:GetProfile(player: Player): Profile.Profile?
+    AssertModelType(self._modelType, ModelType.Player)
+    
     local profile: Profile.Profile?
 
     repeat
@@ -416,10 +419,8 @@ end
     @return ()
 ]=]
 function Model:SaveAllProfiles(): ()
-    if self._modelType ~= ModelType.Player then
-        error(Errors.CannotCallSaveAllProfilesOnNonPlayerModel)
-    end
-    
+    AssertModelType(self._modelType, ModelType.Player)
+
     for _, profile: Profile.Profile in self._profiles do
         profile:Save()
     end
