@@ -410,10 +410,15 @@ function Model:GetProfile(player: Player): Profile.Profile?
 end
 
 --[=[
+    Saves all the currently loaded profiles for this module. It will fail
+    if you attempt to call it on a model that doesn't specifically work for players 
 
+    @return ()
 ]=]
-function Model:SaveAllProfiles()
-    -- TO - DO
+function Model:SaveAllProfiles(): ()
+    for _, profile: Profile.Profile in self._profiles do
+        profile:Save()
+    end
 end
 
 --[=[
