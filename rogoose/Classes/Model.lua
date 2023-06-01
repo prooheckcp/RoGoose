@@ -129,11 +129,7 @@ function Model:Get<T>(key: Player | string, path: string): T?
             return nil
         end
 
-        if result == nil then
-            result = DeepCopy(self._schema:Get())
-        end
-
-        AssertSchema(self._schema:Get(), result)
+        self:_FilterResult(result)
 
         return GetNestedValue(result, path)
     end
@@ -191,6 +187,19 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
         return profile:Set(path, newValue)
     else
         AssertType(key, "key", "string")
+
+        UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
+            self:_FilterResult(oldData)
+            local result: any, outterScore: {[string]: any}, valueIndex: string? = GetNestedValue(oldData, path)
+            
+            if result and valueIndex then
+                outterScore[valueIndex] = newValue -- TO:DO check types
+            end
+            
+            return oldData
+        end)
+
+        return
     end
 end
 
@@ -501,6 +510,37 @@ function Model:_GetAsync(key: string)
             reject(result)
         end
     end)
+end
+
+--[=[
+    Given a result from the dataStore, it will filter it to make sure it's valid
+    and adjust it to the current schema
+
+    E.g
+    ```lua
+        local success: boolean, result: any = self:_GetAsync(key):await()
+
+        if not success then
+            return nil
+        end
+
+        self:_FilterResult(result)
+
+        return GetNestedValue(result, path)
+    ```
+
+    @private
+
+    @param result any? -- The result from the dataStore
+
+    @return any
+]=]
+function Model:_FilterResult(result: any?): any
+    if result == nil then
+        result = DeepCopy(self._schema:Get())
+    end
+
+    return AssertSchema(self._schema:Get(), result)
 end
 
 --[[
