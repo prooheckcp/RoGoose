@@ -19,6 +19,8 @@ local KeyType = require(script.Parent.Parent.Functions.KeyType)
 local Warning = require(script.Parent.Parent.Functions.Warning)
 local Warnings = require(script.Parent.Parent.Constants.Warnings)
 local AssertModelType = require(script.Parent.Parent.Functions.AssertModelType)
+local AssertType = require(script.Parent.Parent.Functions.AssertType)
+local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
 
 type Trove = typeof(Trove.new())
 
@@ -105,15 +107,29 @@ end
 
     @return T -- T being whatever value type that you are getting
 ]=]
-function Model:Get<T>(key: string | Player, index: string): T?
-    if KeyType(key) == "Player" then
-        local profile: Profile.Profile = self:GetProfile(key)
+function Model:Get<T>(key: Player | string, path: string): T?
+    AssertType(path, "path", "string")
 
-        if profile == nil then return nil end
+    if self:GetModelType() == ModelType.Player then
+        AssertType(key, "key", "Player")
 
-        profile:Get(index)
+        return self:GetProfile(key):Get(path)
     else
-       
+        AssertType(key, "key", "string")
+
+        local success: boolean, result: any = self:_GetAsync(key):await()
+
+        if not success then
+            return nil
+        end
+
+        if result == nil then
+            result = DeepCopy(self._schema:Get())
+        end
+
+        AssertSchema(self._schema:Get(), result)
+
+        return GetNestedValue(result, path)
     end
 end
 
@@ -443,6 +459,15 @@ function Model:SaveProfile(player: Player): (boolean, any?)
     end
 
     return profile:Save()
+end
+
+--[=[
+    Gets the model type of the model
+
+    @return ModelType
+]=]
+function Model:GetModelType(): ModelType.ModelType
+    return self._modelType
 end
 
 --[=[

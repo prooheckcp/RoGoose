@@ -1,3 +1,4 @@
+--!strict
 local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
 local Warning = require(script.Parent.Parent.Functions.Warning)
 local Warnings = require(script.Parent.Parent.Constants.Warnings)
@@ -62,14 +63,14 @@ end
     print(yen) -- 3
     ```
 
-    @param index string -- The path to the data
+    @param path string -- The path to the data
 
     @return T -- T being whatever value type that you are getting
 ]=]
-function Profile:Get<T>(index: string): T?
-    AssertType(index, "index", "string")
+function Profile:Get<T>(path: string): T?
+    AssertType(path, "path", "string")
 
-    local value: T, _, warningMessage: string? = GetNestedValue(self._data, index)
+    local value: T, _, warningMessage: string? = GetNestedValue(self._data, path)
 
     if warningMessage then
         Warning(warningMessage)
@@ -109,16 +110,16 @@ end
     print(profile:Get("Wallet.Yen")) -- 5
     ```
 
-    @param index string -- The path to the data
+    @param path string -- The path to the data
     @param newValue T -- The new value to set
 
     @return T -- The previous value that was set
 ]=]
-function Profile:Set<T>(index: string, newValue: T): T?
-    AssertType(index, "index", "string")
+function Profile:Set<T>(path: string, newValue: T): T?
+    AssertType(path, "path", "string")
 
-    local oldValue: T, outterScore: {[string]: any}, warningMessage: string? = GetNestedValue(self._data, index)
-    local strings: {string} = string.split(index, ".")
+    local oldValue: T, outterScore: {[string]: any}, warningMessage: string? = GetNestedValue(self._data, path)
+    local strings: {string} = string.split(path, ".")
     local lastIndex: string = strings[#strings]
 
     if warningMessage then
@@ -165,15 +166,15 @@ end
     print(inventory[2].Name) -- Shield
     ```
 
-    @param index string -- The path to the data
+    @param path string -- The path to the data
     @param value T -- The value to add
 
     @return any -- The array that the value was added to
 ]=]
-function Profile:AddElement<T>(index: string, value: T): any
-    AssertType(index, "index", "string")
+function Profile:AddElement<T>(path: string, value: T): any
+    AssertType(path, "path", "string")
 
-    local array: any, _, warningMessage: string? = GetNestedValue(self._data, index)
+    local array: any, _, warningMessage: string? = GetNestedValue(self._data, path)
 
     if warningMessage then
         Warning(warningMessage)
@@ -221,15 +222,15 @@ end
     print(inventory[1].Name) -- Shield
     ```
 
-    @param index string -- The path to the data
+    @param path string -- The path to the data
     @param arrayIndex number -- The index of the array to remove
 
     @return any -- The array that the value was removed from
 ]=]
-function Profile:RemoveElementByIndex<T>(index: string, arrayIndex: any): any
-    AssertType(index, "index", "string")
+function Profile:RemoveElementByIndex<T>(path: string, arrayIndex: any): any
+    AssertType(path, "path", "string")
 
-    local array: any, _, warningMessage: string? = GetNestedValue(self._data, index)
+    local array: any, _, warningMessage: string? = GetNestedValue(self._data, path)
 
     if warningMessage then
         Warning(warningMessage)
@@ -280,10 +281,10 @@ end
 
     @return boolean -- Whether or not the value exists
 ]=]
-function Profile:Exists(index: string): boolean
-    AssertType(index, "index", "string")
+function Profile:Exists(path: string): boolean
+    AssertType(path, "path", "string")
 
-    local value: any = GetNestedValue(self._data, index)
+    local value: any = GetNestedValue(self._data, path)
 
     return value ~= nil
 end
@@ -315,20 +316,20 @@ end
 
     @return number, number -- The previous value and the new value
 ]=]
-function Profile:Increment(index: string, amount: number): (number, number)
-    AssertType(index, "index", "string")
+function Profile:Increment(path: string, amount: number): (number, number)
+    AssertType(path, "path", "string")
     AssertType(amount, "amount", "number")
 
-    local currentValue: any = self:Get(index)
+    local currentValue: any = self:Get(path)
 
     if GetType(currentValue) ~= "number" then
         warn(Warnings.NumberWrongType)
         return 0, 0
     end
 
-    self:Set(index, currentValue + amount)
+    self:Set(path, currentValue + amount)
 
-    return currentValue, self:Get(index)
+    return currentValue, self:Get(path)
 end
 
 --[=[
@@ -353,25 +354,25 @@ end
     print(currentGold) -- 3
     ```
 
-    @param index string -- The path to the data
+    @param path string -- The path to the data
     @param amount number -- The amount to subtract
 
     @return number, number -- The previous value and the new value
 ]=]
-function Profile:Subtract(index: string, amount: number): (number, number)
-    AssertType(index, "index", "string")
+function Profile:Subtract(path: string, amount: number): (number, number)
+    AssertType(path, "path", "string")
     AssertType(amount, "amount", "number")
     
-    local currentValue: any = self:Get(index)
+    local currentValue: any = self:Get(path)
 
     if GetType(currentValue) ~= "number" then
         warn(Warnings.NumberWrongType)
         return 0, 0
     end
 
-    self:Set(index, currentValue - amount)
+    self:Set(path, currentValue - amount)
 
-    return currentValue, self:Get(index)
+    return currentValue, self:Get(path)
 end
 
 --[=[
