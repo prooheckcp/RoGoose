@@ -113,7 +113,13 @@ function Model:Get<T>(key: Player | string, path: string): T?
     if self:GetModelType() == ModelType.Player then
         AssertType(key, "key", "Player")
 
-        return self:GetProfile(key):Get(path)
+        local profile: Profile.Profile? = self:GetProfile(key)
+
+        if not profile then
+            return nil
+        end
+
+        return profile:Get(path)
     else
         AssertType(key, "key", "string")
 
@@ -165,20 +171,26 @@ end
     ```
 
     @param key string | Player -- The key to set the data to
-    @param index string -- The path to the data
+    @param path string -- The path to the data
     @param newValue T -- The new value to set
 
     @return T -- The previous value that was set
 ]=]
-function Model:Set<T>(key: string | Player, index: string, newValue: T): T?
-    if KeyType(key) == "Player" then
-        local profile: Profile.Profile = self:GetProfile(key)
+function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
+    AssertType(path, "path", "string")
 
-        if profile == nil then return nil end
+    if self:GetModelType() == ModelType.Player then
+        AssertType(key, "key", "Player")
 
-        profile:Set(index, newValue)
+        local profile: Profile.Profile? = self:GetProfile(key)
+
+        if not profile then
+            return nil
+        end
+
+        return profile:Set(path, newValue)
     else
-
+        AssertType(key, "key", "string")
     end
 end
 

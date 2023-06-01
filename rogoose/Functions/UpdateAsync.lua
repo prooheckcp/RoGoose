@@ -9,10 +9,10 @@ local Settings = require(script.Parent.Parent.Constants.Settings)
 
     @return nil
 ]]
-local function UpdateAsync(key: string, newValue: any, dataStore: DataStore): (boolean, any)
+local function UpdateAsync(key: string, newValue: any, dataStore: DataStore, transformFunction: (any, DataStoreKeyInfo) -> (any, {number}?, {  }?)?): (boolean, any)
     local function updateAttempt(): (boolean, any?)
         return pcall(function()
-            return dataStore:UpdateAsync(key, function()
+            return dataStore:UpdateAsync(key, transformFunction or function()
                 return newValue
             end)
         end)
