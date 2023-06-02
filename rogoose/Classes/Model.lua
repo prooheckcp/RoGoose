@@ -348,13 +348,13 @@ end
 ]=]
 function Model:Exists(key: string | Player, index: string): boolean
     if KeyType(key) == "Player" then
-        local profile: Profile.Profile = self:GetProfile(key)
+        local profile: Profile.Profile? = self:GetProfile(key)
 
         if profile == nil then return false end
 
-        profile:Exists(index)
+        return profile:Exists(index)
     else
-
+        return self:Get(key, index) ~= nil
     end
 end
 

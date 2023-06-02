@@ -9,5 +9,5 @@ print("TotalGold", ModelLoader.ServerSchema:Get("Global", "TotalGold"))
 ModelLoader.ServerSchema:Set("Global", "TotalGold", 10)
 print("TotalGold", ModelLoader.ServerSchema:Get("Global", "TotalGold"))
 
-ModelLoader.ServerSchema:Set("Global", "GlobalWallet.Yena", 15)
+ModelLoader.ServerSchema:Set("Global", "GlobalWallet.Yen", "UwU")
 print("Yen", ModelLoader.ServerSchema:Get("Global", "GlobalWallet.Yen"))
