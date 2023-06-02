@@ -386,16 +386,56 @@ end
 
     @return number, number -- The previous value and the new value
 ]=]
-function Model:Increment(key: string | Player, index: string, amount: number): (number, number)
-    if KeyType(key) == "Player" then
-        local profile: Profile.Profile = self:GetProfile(key)
+function Model:Increment(key: string | Player, path: string, amount: number): (number, number)
+    AssertType(path, "path", "string")
+    AssertType(amount, "amount", "number")
 
-        if profile == nil then return 0, 0 end
+    if self:GetModelType() == ModelType.Player then
+        AssertType(key, "key", "Player")
 
-        profile:Increment(index, amount)
+        local profile: Profile.Profile? = self:GetProfile(key)
+
+        if not profile then
+            return 0, 0
+        end
+
+        return profile:Increment(path, amount)
     else
+        AssertType(key, "key", "string")
 
+        local previousValue: number = 0
+
+        local success: boolean, updateResult: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
+            oldData = self:_FilterResult(oldData)
+
+            local oldValue: any, outterScore: {[string]: any}, warningMessage: string? = GetNestedValue(oldData, path)
+            local strings: {string} = string.split(path, ".")
+            local lastIndex: string = strings[#strings]
+
+            if warningMessage then
+                Warning(warningMessage)
+                return nil
+            end
+
+            if oldValue then
+                if GetType(amount) ~= GetType(oldValue) then
+                    warn(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(amount))
+                    return oldData
+                end
+
+                previousValue = oldValue
+                outterScore[lastIndex] = oldValue + amount
+            end
+            
+            return oldData
+        end)
+
+        if success then
+            return previousValue, updateResult :: number
+        end
     end
+
+    return 0, 0
 end
 
 --[=[
