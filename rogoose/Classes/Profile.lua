@@ -67,7 +67,7 @@ end
 
     @return T -- T being whatever value type that you are getting
 ]=]
-function Profile:Get<T>(path: string): T?
+function Profile:Get<T>(path: string): T
     AssertType(path, "path", "string")
 
     local value: T, _, warningMessage: string? = GetNestedValue(self._data, path)

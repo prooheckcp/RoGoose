@@ -20,6 +20,9 @@ local itemsSchema = RoGoose.Schema.new({
 local ServerSchema = RoGoose.Schema.new({
     TotalGold = 5,
     TotalGems = 3,
+    GlobalWallet = {
+        Yen = 0,
+    }
 })
 
 return {

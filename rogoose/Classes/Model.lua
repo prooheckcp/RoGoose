@@ -21,6 +21,7 @@ local Warnings = require(script.Parent.Parent.Constants.Warnings)
 local AssertModelType = require(script.Parent.Parent.Functions.AssertModelType)
 local AssertType = require(script.Parent.Parent.Functions.AssertType)
 local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
+local GetType = require(script.Parent.Parent.Functions.GetType)
 
 type Trove = typeof(Trove.new())
 
@@ -188,19 +189,36 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
     else
         AssertType(key, "key", "string")
 
-        UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
-            self:_FilterResult(oldData)
-            local result: any, outterScore: {[string]: any}, valueIndex: string? = GetNestedValue(oldData, path)
-            
-            if result and valueIndex then
-                outterScore[valueIndex] = newValue -- TO:DO check types
+        local success: boolean, updateResult: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
+            oldData = self:_FilterResult(oldData)
+
+            local oldValue: any, outterScore: {[string]: any}, warningMessage: string? = GetNestedValue(oldData, path)
+            local strings: {string} = string.split(path, ".")
+            local lastIndex: string = strings[#strings]
+
+            if warningMessage then
+                Warning(warningMessage)
+                return nil
+            end
+
+            if oldValue then
+                if GetType(newValue) ~= GetType(oldValue) then
+                    warn(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(newValue))
+                    return oldData
+                end
+
+                outterScore[lastIndex] = newValue
             end
             
             return oldData
         end)
 
-        return
+        if success then
+            return updateResult
+        end
     end
+
+    return nil
 end
 
 --[=[

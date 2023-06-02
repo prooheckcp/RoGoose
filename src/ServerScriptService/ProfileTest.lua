@@ -11,6 +11,7 @@ Players.PlayerAdded:Connect(function(player: Player)
     --[[
         ==================== Testing Profile ====================
     ]]
+        profile:Set("Gold", 10)
         local profileGold: number = profile:Get("Gold") -- 0
 
         print("Profile Gold: ", profileGold)
@@ -18,6 +19,7 @@ Players.PlayerAdded:Connect(function(player: Player)
         ==================== Testing Model ====================
     ]]
     
+    ModelLoader.Currencies:Set(player, "Gold", 5)
     local modelGold: number = ModelLoader.Currencies:Get(player, "Gold")
 
     print ("Model Gold: ", modelGold)
