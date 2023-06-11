@@ -119,7 +119,7 @@ function Model:Get<T>(key: Player | string, path: string): T?
     if self:GetModelType() == ModelType.Player then
         AssertType(key, "key", "Player")
 
-        local profile: Profile.Profile? = self:GetProfile(key)
+        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if not profile then
             return nil
@@ -184,7 +184,7 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
     if self:GetModelType() == ModelType.Player then
         AssertType(key, "key", "Player")
 
-        local profile: Profile.Profile? = self:GetProfile(key)
+        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if not profile then
             return nil
@@ -263,7 +263,7 @@ end
 ]=]
 function Model:AddElement<T>(key: string | Player, index: string, value: T): any
     if KeyType(key) == "Player" then
-        local profile: Profile.Profile = self:GetProfile(key)
+        local profile: Profile.Profile = self:_GetPlayerProfile(key)
 
         if profile == nil then return nil end
 
@@ -312,7 +312,7 @@ end
 ]=]
 function Model:RemoveElementByIndex<T>(key: string | Player, index: string, arrayIndex: any): any
     if KeyType(key) == "Player" then
-        local profile: Profile.Profile = self:GetProfile(key)
+        local profile: Profile.Profile = self:_GetPlayerProfile(key)
 
         if profile == nil then return nil end
 
@@ -353,7 +353,7 @@ end
 ]=]
 function Model:Exists(key: string | Player, index: string): boolean
     if KeyType(key) == "Player" then
-        local profile: Profile.Profile? = self:GetProfile(key)
+        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if profile == nil then return false end
 
@@ -398,7 +398,7 @@ function Model:Increment(key: string | Player, path: string, amount: number): (n
     if self:GetModelType() == ModelType.Player then
         AssertType(key, "key", "Player")
 
-        local profile: Profile.Profile? = self:GetProfile(key)
+        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if not profile then
             return 0, 0
@@ -478,7 +478,7 @@ function Model:Subtract(key: string | Player, path: string, amount: number): (nu
     if self:GetModelType() == ModelType.Player then
         AssertType(key, "key", "Player")
 
-        local profile: Profile.Profile? = self:GetProfile(key)
+        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if not profile then
             return 0, 0
@@ -524,26 +524,17 @@ function Model:Subtract(key: string | Player, path: string, amount: number): (nu
 end
 
 --[=[
-    Gets a player's profile. If it returns nil it means that the player left the game
+    Gets a player's profile. If it returns nil it means that the player left the game. Also warns when something goes wrong
 
     @yield
     @param player Player -- The player to get the profile for
 
     @return Profile
 ]=]
-function Model:GetProfile(player: Player): Profile.Profile?
+function Model:GetPlayerProfile(player: Player): Profile.Profile?
     AssertModelType(self._modelType, ModelType.Player)
     
-    local profile: Profile.Profile?
-
-    repeat
-        profile = self._profiles[player.UserId..self._options.savingKey]
-        
-        if not profile then
-            task.wait()
-        end
-    until
-        profile ~= nil or not Players:GetPlayerByUserId(player.UserId)
+    local profile: Profile.Profile? = self:_GetPlayerProfile(player)
 
     if profile == nil then
         Warning(Warnings.PlayerIsNotInTheSocket)
@@ -576,7 +567,7 @@ end
     @return boolean, any -- Whether or not the save was successful and the error if it wasn't
 ]=]
 function Model:SaveProfile(player: Player): (boolean, any?)
-    local profile: Profile.Profile? = self:GetProfile(player)
+    local profile: Profile.Profile? = self:_GetPlayerProfile(player)
 
     if not profile then
         return false, nil
@@ -648,6 +639,34 @@ function Model:_GetAsync(key: string)
             reject(result)
         end
     end)
+end
+
+--[=[
+    Gets a player's profile. If it returns nil it means that the player left the game
+
+    @private
+    @yield
+    @param player Player -- The player to get the profile for
+
+    @return Profile
+]=]
+function Model:_GetPlayerProfile(player: Player): Profile.Profile?
+    local profile: Profile.Profile?
+
+    repeat
+        profile = self._profiles[player.UserId..self._options.savingKey]
+        
+        if not profile then
+            task.wait()
+        end
+    until
+        profile ~= nil or not Players:GetPlayerByUserId(player.UserId)
+
+    if profile == nil then
+        Warning(Warnings.PlayerIsNotInTheSocket)
+    end
+
+    return profile
 end
 
 --[=[
@@ -744,7 +763,7 @@ end
     @return ()
 ]=]
 function Model:_UnloadProfile(player: Player): ()
-    local profile: Profile.Profile? = self:GetProfile(player)
+    local profile: Profile.Profile? = self:_GetPlayerProfile(player)
 
     if not profile then
         return

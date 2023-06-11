@@ -78,6 +78,7 @@ function RoGoose:_Init(): ()
     end)
 
     game:BindToClose(function()
+        print("Started Closing!")
         while next(self._tasks) ~= nil do
             task.wait()
         end
