@@ -7,7 +7,7 @@ local Settings = require(script.Parent.Parent.Constants.Settings)
     @param newValue any
     @param dataStore DataStore
 
-    @return nil
+    @return boolean, any -- success, new value
 ]]
 local function UpdateAsync(key: string, newValue: any, dataStore: DataStore, transformFunction: (any, DataStoreKeyInfo) -> (any, {number}?, {  }?)?): (boolean, any)
     local function updateAttempt(): (boolean, any?)

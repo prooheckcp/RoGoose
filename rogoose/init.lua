@@ -1,21 +1,14 @@
-local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
-local Signal = require(script.Vendor.Signal)
 local Schema = require(script.Classes.Schema)
 local Model = require(script.Classes.Model)
 local Profile = require(script.Classes.Profile)
 local ModelType = require(script.Enums.ModelType)
 local Errors = require(script.Constants.Errors)
 local Options = require(script.Structs.Options)
-
-local Trove = require(script.Vendor.Trove)
 local Signals = require(script.Constants.Signals)
-
 local Settings = require(script.Constants.Settings)
-
-local SESSION_LOCK_DATASTORE: string = "SessionLockStore"
 
 --[=[
     @class RoGoose
@@ -120,7 +113,7 @@ function RoGoose:_AutoSaving(deltaTime: number): ()
                     continue
                 end
 
-                local profileDelta: number = currentTick - profile._lastSave
+                local profileDelta: number = currentTick - (profile :: Profile)._lastSave
 
                 if profileDelta > Settings.AutoSaveInterval * 0.85 then
                     model:SaveProfile(player)
@@ -220,7 +213,7 @@ function RoGoose:_LoadPlayer(player: Player, model: Model.Model): ()
         return
     end
 
-    model:_LoadProfile(player)
+    model:LoadProfile(player)
 end
 
 --[=[

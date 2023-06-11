@@ -1,10 +1,15 @@
 --!strict
+local DataStoreService = game:GetService("DataStoreService")
+
+local Keys = require(script.Parent.Parent.Constants.Keys)
 local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
 local Warning = require(script.Parent.Parent.Functions.Warning)
 local Warnings = require(script.Parent.Parent.Constants.Warnings)
 local GetType = require(script.Parent.Parent.Functions.GetType)
 local AssertType = require(script.Parent.Parent.Functions.AssertType)
 local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
+
+local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
 
 --[=[
     Profiles consist of data containers to contain data for a specific player
@@ -23,6 +28,9 @@ Profile._key = "" :: string
 ]=]
 function Profile.new(): Profile
     local self = setmetatable({}, Profile)
+    self._key = ""
+    self._player = nil :: Player?
+    self._lastSave = tick()
     self._data = {}
 
     return self
@@ -396,6 +404,25 @@ function Profile:Save(): (boolean, any?)
     end
 
     return success, newValue
+end
+
+--[=[
+    Locks the profile. This will make it so that this profile cannot be loaded until it gets released.
+    This is useful for when you want to make sure that the profile is not loaded multiple times.
+
+    @return boolean, number
+]=]
+function Profile:Lock(): (boolean, number)
+    return UpdateAsync(self._key, os.time(), self._dataStore)
+end
+
+--[=[
+    Releases the profile. This will make it so that this profile can be loaded again.
+
+    @return 
+]=]
+function Profile:Release(): (boolean, number)
+    return UpdateAsync(self._key, nil, self._dataStore)
 end
 
 export type Profile = typeof(Profile.new())

@@ -590,6 +590,33 @@ function Model:GetModelType(): ModelType.ModelType
 end
 
 --[=[
+    Loads a player's profile
+
+    @param player Player -- The player to load the profile for
+
+    @return ()
+]=]
+function Model:LoadProfile(key: string | Player): ()
+    local keyType: string = KeyType(key)
+
+    self:_GetAsync(key):andThen(function(result: any?)
+        if keyType == "Player" then
+        -- Create player's profile
+            self:_CreateProfileByPlayer(key, result, (key :: Player).UserId..self._options.savingKey)
+        elseif keyType == "string" then
+
+        end
+    end, function()
+        --kick the player
+        if keyType == "Player" then
+            (key :: Player):Kick(Errors.RobloxServersDown)
+        elseif keyType == "string" then
+
+        end
+    end)
+end
+
+--[=[
     Gets async from the DataStore with the given key
 
     @private
@@ -647,25 +674,6 @@ end
 ]]
 
 --[=[
-    Loads a player's profile
-
-    @param player Player -- The player to load the profile for
-
-    @return ()
-]=]
-function Model:_LoadProfile(player: Player): ()
-    local key: string = player.UserId..self._options.savingKey
-
-    self:_GetAsync(key):andThen(function(result: any?)
-        -- Create player's profile
-        self:_CreateProfile(player, result, key)
-    end, function()
-        --kick the player
-        player:Kick(Errors.RobloxServersDown)
-    end)
-end
-
---[=[
     Creates a player's profile inside of the cache of the Model
 
     @private
@@ -675,7 +683,7 @@ end
 
     @return ()
 ]=]
-function Model:_CreateProfile(player: Player, data: any?, key: string): ()
+function Model:_CreateProfileByPlayer(player: Player, data: any?, key: string): ()
     local firstTime: boolean = data == nil
     local profile: Profile.Profile = Profile.new()
     profile._key = key
