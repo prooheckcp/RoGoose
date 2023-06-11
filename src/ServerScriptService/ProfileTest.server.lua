@@ -5,7 +5,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local RoGoose = require(ReplicatedStorage.RoGoose)
 local ModelLoader = require(ServerScriptService.Server.ModelLoader)
 
-Players.PlayerAdded:Connect(function(player: Player)
+local function playerAdded(player: Player)
     local profile: RoGoose.Profile = ModelLoader.Currencies:GetProfile(player)
 
     --[[
@@ -23,4 +23,12 @@ Players.PlayerAdded:Connect(function(player: Player)
     local modelGold: number = ModelLoader.Currencies:Get(player, "Gold")
 
     print ("Model Gold: ", modelGold)
+end
+
+for _, player: Player in Players:GetPlayers() do
+    playerAdded(player)
+end
+
+Players.PlayerAdded:Connect(function(player: Player)
+    playerAdded(player)
 end)

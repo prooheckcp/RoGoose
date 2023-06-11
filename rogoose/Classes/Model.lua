@@ -610,8 +610,6 @@ function Model:LoadProfile(key: string | Player): ()
         --kick the player
         if keyType == "Player" then
             (key :: Player):Kick(Errors.RobloxServersDown)
-        elseif keyType == "string" then
-
         end
     end)
 end
