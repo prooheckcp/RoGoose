@@ -679,7 +679,7 @@ function Model:_CreateProfile(player: Player, data: any?, key: string): ()
     local firstTime: boolean = data == nil
     local profile: Profile.Profile = Profile.new()
     profile._key = key
-    profile._Player = player
+    profile._player = player
 
     if firstTime then
         local schemaCopy: {[string]: any} = DeepCopy(self._schema:Get())

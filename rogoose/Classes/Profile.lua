@@ -13,7 +13,7 @@ local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
 local Profile = {}
 Profile.__index = Profile
 Profile.type = "DatabaseProfile"
-Profile._Player = nil :: Player?
+Profile._player = nil :: Player?
 Profile._data = {} :: {[string]: any}
 Profile._lastSave = tick() :: number
 Profile._key = "" :: string
@@ -39,7 +39,7 @@ end
     @return Player
 ]=]
 function Profile:GetPlayer(): Player
-    return self._Player
+    return self._player
 end
 
 --[=[
