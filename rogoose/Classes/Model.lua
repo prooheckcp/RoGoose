@@ -22,6 +22,9 @@ local AssertModelType = require(script.Parent.Parent.Functions.AssertModelType)
 local AssertType = require(script.Parent.Parent.Functions.AssertType)
 local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
 local GetType = require(script.Parent.Parent.Functions.GetType)
+local Keys = require(script.Parent.Parent.Constants.Keys)
+
+local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
 
 type Trove = typeof(Trove.new())
 
@@ -696,6 +699,10 @@ function Model:_CreateProfileByPlayer(player: Player, data: any?, key: string): 
 
     self._profiles[key] = profile
     self.PlayerAdded:Fire(player, profile, firstTime)
+end
+
+function Model:_IsSessionLocked(): boolean
+    GetAsync()
 end
 
 --[=[

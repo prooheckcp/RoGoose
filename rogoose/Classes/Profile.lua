@@ -413,7 +413,7 @@ end
     @return boolean, number
 ]=]
 function Profile:Lock(): (boolean, number)
-    return UpdateAsync(self._key, os.time(), self._dataStore)
+    return UpdateAsync(self._key, os.time(), SessionLockStore)
 end
 
 --[=[
@@ -422,7 +422,7 @@ end
     @return 
 ]=]
 function Profile:Release(): (boolean, number)
-    return UpdateAsync(self._key, nil, self._dataStore)
+    return UpdateAsync(self._key, nil, SessionLockStore)
 end
 
 export type Profile = typeof(Profile.new())
