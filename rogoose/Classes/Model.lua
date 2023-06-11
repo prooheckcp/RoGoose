@@ -23,6 +23,7 @@ local AssertType = require(script.Parent.Parent.Functions.AssertType)
 local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
 local GetType = require(script.Parent.Parent.Functions.GetType)
 local Keys = require(script.Parent.Parent.Constants.Keys)
+local GetKey = require(script.Parent.Parent.Functions.GetKey)
 
 local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
 
@@ -605,7 +606,7 @@ function Model:LoadProfile(key: string | Player): ()
     self:_GetAsync(key):andThen(function(result: any?)
         if keyType == "Player" then
         -- Create player's profile
-            self:_CreateProfileByPlayer(key, result, (key :: Player).UserId..self._options.savingKey)
+            self:_CreateProfileByPlayer(key, result, GetKey(key, self._name))
         elseif keyType == "string" then
 
         end
@@ -701,8 +702,23 @@ function Model:_CreateProfileByPlayer(player: Player, data: any?, key: string): 
     self.PlayerAdded:Fire(player, profile, firstTime)
 end
 
-function Model:_IsSessionLocked(): boolean
-    GetAsync()
+--[=[
+    Checks whether the session is locked or not
+
+    @private
+
+    @param key string | Player -- The key to check the session for
+
+    @return boolean
+]=]
+function Model:_IsSessionLocked(key: string | Player): boolean
+    local success: boolean, value = GetAsync(GetKey(key, self._name), self._dataStore)
+
+    if not success then -- We will assume the profile as locked if we can't access it
+        return true
+    end
+
+    return value ~= nil
 end
 
 --[=[
