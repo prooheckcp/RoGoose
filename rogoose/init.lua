@@ -1,6 +1,5 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local DataStoreService = game:GetService("DataStoreService")
 
 local Schema = require(script.Classes.Schema)
 local Model = require(script.Classes.Model)
@@ -12,9 +11,8 @@ local Signals = require(script.Constants.Signals)
 local Settings = require(script.Constants.Settings)
 local GetKey = require(script.Functions.GetKey)
 local KickMessages = require(script.Constants.KickMessages)
-local Keys = require(script.Constants.Keys)
-
-local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
+local Warnings = require(script.Constants.Warnings)
+local Warning = require(script.Functions.Warning)
 
 --[=[
     @class RoGoose
@@ -84,7 +82,7 @@ function RoGoose:_Init(): ()
             task.wait()
         end
 
-        
+        Warning(Warnings.FinishedServerTasks)
     end)
 end
 

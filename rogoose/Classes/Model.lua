@@ -208,7 +208,7 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
 
             if oldValue then
                 if GetType(newValue) ~= GetType(oldValue) then
-                    warn(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(newValue))
+                    Warning(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(newValue))
                     return oldData
                 end
 
@@ -424,7 +424,7 @@ function Model:Increment(key: string | Player, path: string, amount: number): (n
 
             if oldValue then
                 if GetType(amount) ~= GetType(oldValue) then
-                    warn(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(amount))
+                    Warning(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(amount))
                     return oldData
                 end
 
@@ -504,7 +504,7 @@ function Model:Subtract(key: string | Player, path: string, amount: number): (nu
 
             if oldValue then
                 if GetType(amount) ~= GetType(oldValue) then
-                    warn(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(amount))
+                    Warning(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(amount))
                     return oldData
                 end
 
@@ -618,12 +618,6 @@ function Model:LoadProfile(key: string | Player): ()
             -- Create player's profile
             local profile: Profile.Profile = self:_CreateProfileByPlayer(key, result, accessKey)
             profile:Lock()
-            if self:_IsSessionLocked(accessKey) then
-                warn("Session is locked")
-                return 
-            else
-                warn("Session is not locked")
-            end
         elseif keyType == "string" then
 
         end
