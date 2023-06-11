@@ -1,5 +1,6 @@
 local RunService = game:GetService("RunService")
 
+local Warnings = require(script.Parent.Parent.Constants.Warnings)
 local Settings = require(script.Parent.Parent.Constants.Settings)
 
 --[[    
@@ -12,13 +13,13 @@ local Settings = require(script.Parent.Parent.Constants.Settings)
 local function Warning(message: string): ()
     if RunService:IsStudio() then
         if Settings.OutputWarningsInStudio then
-            warn(message)
+            warn(Warnings.Header..message)
         end
         return
     end
     
     if Settings.OutputWarningsInRelease then
-        warn(message)
+        warn(Warnings.Header..message)
     end
 end
 

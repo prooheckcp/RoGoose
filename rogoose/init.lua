@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local DataStoreService = game:GetService("DataStoreService")
 
 local Schema = require(script.Classes.Schema)
 local Model = require(script.Classes.Model)
@@ -9,6 +10,11 @@ local Errors = require(script.Constants.Errors)
 local Options = require(script.Structs.Options)
 local Signals = require(script.Constants.Signals)
 local Settings = require(script.Constants.Settings)
+local GetKey = require(script.Functions.GetKey)
+local KickMessages = require(script.Constants.KickMessages)
+local Keys = require(script.Constants.Keys)
+
+local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
 
 --[=[
     @class RoGoose
@@ -38,6 +44,7 @@ RoGoose.ModelType = ModelType
 RoGoose._cachedModels = {} :: {[string]: Model.Model} -- Model Name / Model Instance
 RoGoose._currentSaveDelta = 0 :: number
 RoGoose._lastSave = tick() :: number
+RoGoose._tasks = {} :: {[string]: boolean} -- This caches tasks currently being done by the library, it shouldn't close the server before they all finish! (Should only bound tasks that are of severe importance)
 
 --[=[
     This is the main function of the program and it is used to set up some events
@@ -72,8 +79,12 @@ function RoGoose:_Init(): ()
         self:_AutoSaving(deltaTime)
     end)
 
-    game:BindToClose(function() -- TO-DO
-        --self:_AutoSaving(Settings.AutoSaveInterval)
+    game:BindToClose(function()
+        while next(self._tasks) ~= nil do
+            task.wait()
+        end
+
+        
     end)
 end
 
@@ -138,6 +149,40 @@ end
     @return ()
 ]=]
 function RoGoose:_PlayerJoined(player: Player): ()
+    local failedToLoad: boolean = false
+
+    -- Check if any of the player sessions are locked or not
+    -- TO-DO Make this parallel instead of single threaded
+    for _, model: Model.Model in self._cachedModels do
+        if model._modelType ~= ModelType.Player then
+            continue
+        end
+
+        local sessionLockKey: string = GetKey(player, model._name)
+        local attempts: number = 0
+
+        while model:_IsSessionLocked(sessionLockKey) do
+            attempts += 1
+
+            if attempts > Settings.MaxSessionLockingAttempts then
+                failedToLoad = true
+                break
+            end
+
+
+            task.wait(1)
+        end
+
+        if failedToLoad then -- No point on going any further
+            break
+        end
+    end
+
+    if failedToLoad then -- We don't want to deal with this kind of player
+        player:Kick(KickMessages.SessionLocked)
+        return
+    end
+
     for _, model: Model.Model in self._cachedModels do
         if model._modelType ~= ModelType.Player then
             continue

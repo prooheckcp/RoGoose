@@ -3,4 +3,6 @@ return {
     AutoSaveInterval = 10, -- How often to autosave the player's profile (in seconds)
     OutputWarningsInStudio = true,
     OutputWarningsInRelease = false,
+    MaxSessionLockingAttempts = 3, -- It will attempt every 1 second
+    AutoReleaseTimer = 15, -- In Seconds
 }
