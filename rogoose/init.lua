@@ -78,7 +78,6 @@ function RoGoose:_Init(): ()
     end)
 
     game:BindToClose(function()
-        print("Started Closing!")
         while next(self._tasks) ~= nil do
             task.wait()
         end
@@ -178,6 +177,21 @@ function RoGoose:_PlayerJoined(player: Player): ()
     end
 
     if failedToLoad then -- We don't want to deal with this kind of player
+        local taskId: string = "ReleaseProfile"..tostring(player.UserId)
+        self._tasks[taskId] = true
+
+        task.delay(Settings.AutoReleaseTimer, function()
+            for _, model: Model.Model in self._cachedModels do
+                if model._modelType ~= ModelType.Player then
+                    continue
+                end
+
+                model:ReleaseProfile(player)
+            end
+            
+            self._tasks[taskId] = nil
+        end)
+
         player:Kick(KickMessages.SessionLocked)
         return
     end

@@ -524,6 +524,19 @@ function Model:Subtract(key: string | Player, path: string, amount: number): (nu
 end
 
 --[=[
+    Releases a profile
+
+    @param key string | Player -- The key to get the data from
+
+    @return ()
+]=]
+function Model:ReleaseProfile(key: string | Player): ()
+    local sessionLockKey: string = GetKey(key, self._name)
+
+    UpdateAsync(sessionLockKey, nil, SessionLockStore)
+end
+
+--[=[
     Gets a player's profile. If it returns nil it means that the player left the game. Also warns when something goes wrong
 
     @yield
@@ -661,10 +674,6 @@ function Model:_GetPlayerProfile(player: Player): Profile.Profile?
         end
     until
         profile ~= nil or not Players:GetPlayerByUserId(player.UserId)
-
-    if profile == nil then
-        Warning(Warnings.PlayerIsNotInTheSocket)
-    end
 
     return profile
 end
