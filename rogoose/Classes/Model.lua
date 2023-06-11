@@ -24,6 +24,7 @@ local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
 local GetType = require(script.Parent.Parent.Functions.GetType)
 local Keys = require(script.Parent.Parent.Constants.Keys)
 local GetKey = require(script.Parent.Parent.Functions.GetKey)
+local KickMessages = require(script.Parent.Parent.Constants.KickMessages)
 
 local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
 
@@ -602,16 +603,32 @@ end
 ]=]
 function Model:LoadProfile(key: string | Player): ()
     local keyType: string = KeyType(key)
+    local accessKey: string = GetKey(key, self._name)
+
+    if self:_IsSessionLocked(accessKey) then
+        if keyType == "Player" then
+            (key :: Player):Kick(KickMessages.SessionLocked)
+        end
+
+        return
+    end
 
     self:_GetAsync(key):andThen(function(result: any?)
         if keyType == "Player" then
-        -- Create player's profile
-            self:_CreateProfileByPlayer(key, result, GetKey(key, self._name))
+            -- Create player's profile
+            local profile: Profile.Profile = self:_CreateProfileByPlayer(key, result, accessKey)
+            profile:Lock()
+            if self:_IsSessionLocked(accessKey) then
+                warn("Session is locked")
+                return 
+            else
+                warn("Session is not locked")
+            end
         elseif keyType == "string" then
 
         end
     end, function()
-        --kick the player
+        -- Kick the player
         if keyType == "Player" then
             (key :: Player):Kick(Errors.RobloxServersDown)
         end
@@ -683,9 +700,9 @@ end
     @param player Player -- The player to create the profile for
     @param data any? -- The data to create the profile with
 
-    @return ()
+    @return Profile -- Returns the profile that was just created
 ]=]
-function Model:_CreateProfileByPlayer(player: Player, data: any?, key: string): ()
+function Model:_CreateProfileByPlayer(player: Player, data: any?, key: string): Profile.Profile
     local firstTime: boolean = data == nil
     local profile: Profile.Profile = Profile.new()
     profile._key = key
@@ -700,6 +717,8 @@ function Model:_CreateProfileByPlayer(player: Player, data: any?, key: string): 
 
     self._profiles[key] = profile
     self.PlayerAdded:Fire(player, profile, firstTime)
+
+    return profile
 end
 
 --[=[
@@ -711,8 +730,8 @@ end
 
     @return boolean
 ]=]
-function Model:_IsSessionLocked(key: string | Player): boolean
-    local success: boolean, value = GetAsync(GetKey(key, self._name), self._dataStore)
+function Model:_IsSessionLocked(accessKey: string): boolean
+    local success: boolean, value: any = GetAsync(accessKey, SessionLockStore)
 
     if not success then -- We will assume the profile as locked if we can't access it
         return true

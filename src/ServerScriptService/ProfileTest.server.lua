@@ -6,7 +6,12 @@ local RoGoose = require(ReplicatedStorage.RoGoose)
 local ModelLoader = require(ServerScriptService.Server.ModelLoader)
 
 local function playerAdded(player: Player)
-    local profile: RoGoose.Profile = ModelLoader.Currencies:GetProfile(player)
+    local profile: RoGoose.Profile? = ModelLoader.Currencies:GetProfile(player)
+
+    if not profile then
+        print("Player is not in the game!")
+        return
+    end
 
     --[[
         ==================== Testing Profile ====================
