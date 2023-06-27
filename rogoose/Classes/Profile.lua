@@ -8,7 +8,6 @@ local Warnings = require(script.Parent.Parent.Constants.Warnings)
 local GetType = require(script.Parent.Parent.Functions.GetType)
 local AssertType = require(script.Parent.Parent.Functions.AssertType)
 local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
-local GetAsync = require(script.Parent.Parent.Functions.GetAsync)
 
 local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
 

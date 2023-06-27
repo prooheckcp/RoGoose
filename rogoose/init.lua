@@ -118,7 +118,7 @@ function RoGoose:_AutoSaving(deltaTime: number): ()
 
                 local profile: Profile? = model:GetPlayerProfile(player)
 
-                if profile then
+                if not profile then
                     continue
                 end
 

@@ -25,6 +25,7 @@ local GetType = require(script.Parent.Parent.Functions.GetType)
 local Keys = require(script.Parent.Parent.Constants.Keys)
 local GetKey = require(script.Parent.Parent.Functions.GetKey)
 local KickMessages = require(script.Parent.Parent.Constants.KickMessages)
+local Settings = require(script.Parent.Parent.Constants.Settings)
 
 local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
 
@@ -675,13 +676,18 @@ end
     @return Profile
 ]=]
 function Model:_GetPlayerProfile(player: Player): Profile.Profile?
-    local profile: Profile.Profile?
-
+    local profile: Profile.Profile? = nil
+    
+    local counter: number = 0
     repeat
-        profile = self._profiles[player.UserId..self._options.savingKey]
+        profile = self._profiles[GetKey(player, self._name)]
         
         if not profile then
-            task.wait()
+            counter += task.wait()
+        end
+
+        if counter >= Settings.DefaultTimeout then
+            break
         end
     until
         profile ~= nil or not Players:GetPlayerByUserId(player.UserId)
@@ -784,11 +790,11 @@ end
 ]=]
 function Model:_UnloadProfile(player: Player): ()
     local profile: Profile.Profile? = self:_GetPlayerProfile(player)
-
+    print("Unloading profile...", profile, self._profiles)
     if not profile then
         return
     end
-
+    print("Release!")
     self:SaveProfile(player)
     profile:Release()
     self._profiles[profile._key] = nil
