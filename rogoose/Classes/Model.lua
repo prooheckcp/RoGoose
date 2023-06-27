@@ -532,8 +532,19 @@ end
 ]=]
 function Model:ReleaseProfile(key: string | Player): ()
     local sessionLockKey: string = GetKey(key, self._name)
+    UpdateAsync(sessionLockKey, false, SessionLockStore)
+end
 
-    UpdateAsync(sessionLockKey, nil, SessionLockStore)
+--[=[
+    Locks a profile stopping it from being loaded again
+
+    @param key string | Player -- The key to get the data from
+
+    @return ()
+]=]
+function Model:LockProfile(key: string | Player): ()
+    local sessionLockKey: string = GetKey(key, self._name)
+    UpdateAsync(sessionLockKey, true, SessionLockStore)
 end
 
 --[=[
@@ -759,7 +770,7 @@ function Model:_IsSessionLocked(accessKey: string): boolean
         return true
     end
 
-    return value ~= nil
+    return value == true
 end
 
 --[=[
@@ -779,6 +790,7 @@ function Model:_UnloadProfile(player: Player): ()
     end
 
     self:SaveProfile(player)
+    profile:Release()
     self._profiles[profile._key] = nil
 end
 

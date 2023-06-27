@@ -4,5 +4,5 @@ return {
     OutputWarningsInStudio = true,
     OutputWarningsInRelease = false,
     MaxSessionLockingAttempts = 3, -- It will attempt every 1 second
-    AutoReleaseTimer = 15, -- In Seconds
+    AutoReleaseTimer = 5, -- In Seconds
 }

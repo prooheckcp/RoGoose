@@ -27,7 +27,7 @@ local ServerSchema = RoGoose.Schema.new({
 
 return {
     Currencies = RoGoose.Model.new("Currencies", currenciesSchema),
-    Items = RoGoose.Model.new("Items", itemsSchema),
+    --Items = RoGoose.Model.new("Items", itemsSchema),
 
     
     ServerSchema = RoGoose.Model.new("ServerSchema", ServerSchema, Options.new({

@@ -116,7 +116,7 @@ function RoGoose:_AutoSaving(deltaTime: number): ()
                     continue
                 end
 
-                local profile: Profile? = model:GetProfile(player)
+                local profile: Profile? = model:GetPlayerProfile(player)
 
                 if profile then
                     continue
@@ -167,7 +167,6 @@ function RoGoose:_PlayerJoined(player: Player): ()
                 break
             end
 
-
             task.wait(1)
         end
 
@@ -188,7 +187,7 @@ function RoGoose:_PlayerJoined(player: Player): ()
 
                 model:ReleaseProfile(player)
             end
-            
+
             self._tasks[taskId] = nil
         end)
 
