@@ -790,11 +790,11 @@ end
 ]=]
 function Model:_UnloadProfile(player: Player): ()
     local profile: Profile.Profile? = self:_GetPlayerProfile(player)
-    print("Unloading profile...", profile, self._profiles)
+
     if not profile then
         return
     end
-    print("Release!")
+
     self:SaveProfile(player)
     profile:Release()
     self._profiles[profile._key] = nil
