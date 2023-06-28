@@ -549,6 +549,28 @@ function Model:LockProfile(key: string | Player): ()
 end
 
 --[=[
+    Gets a profile. Works for both player key and string keys
+
+    @yields
+    @param key string | Player -- The key to get the data from
+
+    @return Profile
+]=]
+function Model:GetProfile(key: string | Player): Profile.Profile?
+    AssertType(key, "key", "string")
+
+    local keytype: string = KeyType(key)
+
+    if keytype == "Player" then
+        return self:GetPlayerProfile(key)
+    elseif keytype == "string" then
+        return self:_GetStringProfile(key)
+    end
+
+    return nil
+end
+
+--[=[
     Gets a player's profile. If it returns nil it means that the player left the game. Also warns when something goes wrong
 
     @yield
@@ -624,6 +646,8 @@ function Model:LoadProfile(key: string | Player): ()
     if self:_IsSessionLocked(accessKey) then
         if keyType == "Player" then
             (key :: Player):Kick(KickMessages.SessionLocked)
+        elseif keyType == "string" then
+            
         end
 
         return
@@ -691,6 +715,35 @@ function Model:_GetPlayerProfile(player: Player): Profile.Profile?
         end
     until
         profile ~= nil or not Players:GetPlayerByUserId(player.UserId)
+
+    return profile
+end
+
+--[=[
+    Gets a profile from a string. If it returns nil if it cannot find any profile
+
+    @private
+    @yield
+    @param player Player -- The player to get the profile for
+
+    @return Profile
+]=]
+function Model:_GetStringProfile(key: string): Profile.Profile?
+    local profile: Profile.Profile? = nil
+    
+    local counter: number = 0
+    repeat
+        profile = self._profiles[GetKey(key, self._name)]
+        
+        if not profile then
+            counter += task.wait()
+        end
+
+        if counter >= Settings.DefaultTimeout then
+            break
+        end
+    until
+        profile ~= nil
 
     return profile
 end
