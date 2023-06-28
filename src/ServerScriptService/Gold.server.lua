@@ -16,7 +16,6 @@ Currencies.PlayerAdded:Connect(function(player: Player, data: RoGoose.Profile, f
     gold.Parent = leaderstats
 
     data:GetDataChangedSignal("Gold"):Connect(function(newGold: number, oldGold: number)
-        --print("Previous Gold: ", oldGold, "New Gold: ", newGold)
         gold.Value = newGold
     end)
 end)

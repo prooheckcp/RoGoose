@@ -397,8 +397,22 @@ end
 --[=[
     Listens to input changes on the given path. This will return a signal that will fire whenever the value at the given path changes.
 
+    E.g
     ```lua
+    Currencies.PlayerAdded:Connect(function(player: Player, data: RoGoose.Profile, firstTime: boolean)
+        local leaderstats = Instance.new("Folder")
+        leaderstats.Name = "leaderstats"
+        leaderstats.Parent = player
 
+        local gold = Instance.new("IntValue")
+        gold.Name = "💸Gold"
+        gold.Value = data:Get("Gold")
+        gold.Parent = leaderstats
+
+        data:GetDataChangedSignal("Gold"):Connect(function(newGold: number, oldGold: number)
+            gold.Value = newGold
+        end)
+    end)
     ```
 
     @param path string -- The path to the data
