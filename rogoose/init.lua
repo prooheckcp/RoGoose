@@ -77,6 +77,14 @@ function RoGoose:_Init(): ()
         self:_AutoSaving(deltaTime)
     end)
 
+    Signals.AddTask:Connect(function(taskName: string)
+        self:_AddTask(taskName)
+    end)
+
+    Signals.ClearTask:Connect(function(taskName: string)
+        self:_ClearTask(taskName)
+    end)
+
     game:BindToClose(function()
         while next(self._tasks) ~= nil do
             task.wait()
@@ -84,6 +92,14 @@ function RoGoose:_Init(): ()
 
         Warning(Warnings.FinishedServerTasks)
     end)
+end
+
+function RoGoose:_AddTask(taskName: string): ()
+    self._tasks[taskName] = true
+end
+
+function RoGoose:_ClearTask(taskName: string): ()
+    self._tasks[taskName] = nil
 end
 
 --[=[

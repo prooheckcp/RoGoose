@@ -15,14 +15,16 @@ ModelLoader.Currencies.PlayerAdded:Connect(function(player: Player, data: RoGoos
     gold.Value = data:Get("Gold")
     gold.Parent = leaderstats
 
+    print(data:Get("Gold"))
+
     data:GetDataChangedSignal("Gold"):Connect(function(newGold: number, oldGold: number)
-        print("Previous Gold: ", oldGold, "New Gold: ", newGold)
+        --print("Previous Gold: ", oldGold, "New Gold: ", newGold)
         gold.Value = newGold
     end)
 end)
 
 ModelLoader.Currencies.PlayerRemoving:Connect(function(player: Player, data, firstTime: boolean)
-    print(player, data, firstTime)
+   -- print(player, data, firstTime)
 end)
 
 -- Simple coin game

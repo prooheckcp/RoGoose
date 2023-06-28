@@ -629,7 +629,7 @@ function Model:LoadProfile(key: string | Player): ()
         return
     end
 
-    self:_GetAsync(key):andThen(function(result: any?)
+    self:_GetAsync(accessKey):andThen(function(result: any?)
         if keyType == "Player" then
             -- Create player's profile
             local profile: Profile.Profile = self:_CreateProfileByPlayer(key, result, accessKey)
@@ -745,6 +745,7 @@ function Model:_CreateProfileByPlayer(player: Player, data: any?, key: string): 
     local firstTime: boolean = data == nil
     local profile: Profile.Profile = Profile.new()
     profile._key = key
+    profile._dataStore = self._dataStore
     profile._player = player
 
     if firstTime then

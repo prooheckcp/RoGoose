@@ -1,5 +1,6 @@
 --!strict
 local DataStoreService = game:GetService("DataStoreService")
+local HttpService = game:GetService("HttpService")
 
 local Keys = require(script.Parent.Parent.Constants.Keys)
 local GetNestedValue = require(script.Parent.Parent.Functions.GetNestedValue)
@@ -8,6 +9,7 @@ local Warnings = require(script.Parent.Parent.Constants.Warnings)
 local GetType = require(script.Parent.Parent.Functions.GetType)
 local AssertType = require(script.Parent.Parent.Functions.AssertType)
 local Signal = require(script.Parent.Parent.Vendor.Signal)
+local Signals = require(script.Parent.Parent.Constants.Signals)
 local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
 
 local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
@@ -24,6 +26,7 @@ Profile._data = {} :: {[string]: any}
 Profile._lastSave = tick() :: number
 Profile._key = "" :: string
 Profile._pathSignals = {} :: {[string]: Signal.Signal<any, any>} -- Path to signal
+Profile._dataStore = nil :: DataStore?
 
 --[=[
     Creates a new instance of a Profile
@@ -34,6 +37,7 @@ function Profile.new(): Profile
     self._player = nil :: Player?
     self._lastSave = tick()
     self._data = {}
+    self._dataStore = nil :: DataStore?
     self._pathSignals = {}
 
     return self
@@ -432,10 +436,15 @@ end
 ]=]
 function Profile:Save(): (boolean, any?)
     local success: boolean, newValue: any = UpdateAsync(self._key, self._data, self._dataStore)
+    local processId: string = HttpService:GenerateGUID(false)
+
+    Signals.AddTask:Fire(processId)
 
     if success then
         self._lastSave = os.time()
     end
+
+    Signals.ClearTask:Fire(processId)
 
     return success, newValue
 end
