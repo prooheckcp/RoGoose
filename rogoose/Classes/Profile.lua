@@ -7,6 +7,7 @@ local Warning = require(script.Parent.Parent.Functions.Warning)
 local Warnings = require(script.Parent.Parent.Constants.Warnings)
 local GetType = require(script.Parent.Parent.Functions.GetType)
 local AssertType = require(script.Parent.Parent.Functions.AssertType)
+local Signal = require(script.Parent.Parent.Vendor.Signal)
 local UpdateAsync = require(script.Parent.Parent.Functions.UpdateAsync)
 
 local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
@@ -22,6 +23,7 @@ Profile._player = nil :: Player?
 Profile._data = {} :: {[string]: any}
 Profile._lastSave = tick() :: number
 Profile._key = "" :: string
+Profile._pathSignals = {} :: {[string]: Signal.Signal<any, any>} -- Path to signal
 
 --[=[
     Creates a new instance of a Profile
@@ -32,6 +34,7 @@ function Profile.new(): Profile
     self._player = nil :: Player?
     self._lastSave = tick()
     self._data = {}
+    self._pathSignals = {}
 
     return self
 end
@@ -141,6 +144,10 @@ function Profile:Set<T>(path: string, newValue: T): T?
     end
 
     outterScore[lastIndex] = newValue
+
+    if self._pathSignals[path] then
+        self._pathSignals[path]:Fire(newValue, oldValue)
+    end
 
     return oldValue
 end
@@ -381,6 +388,33 @@ function Profile:Subtract(path: string, amount: number): (number, number)
     self:Set(path, currentValue - amount)
 
     return currentValue, self:Get(path)
+end
+
+--[=[
+    Listens to input changes on the given path. This will return a signal that will fire whenever the value at the given path changes.
+
+    ```lua
+
+    ```
+
+    @param path string -- The path to the data
+
+    @return Signal.Signal<(any) -> nil> -- The signal that will fire whenever the value at the given path changes
+]=]
+function Profile:GetDataChangedSignal(path: string): Signal.Signal<any, any>
+    AssertType(path, "path", "string")
+
+    if not self._pathSignals[path] then
+        self._pathSignals[path] = Signal.new()
+    end
+
+    local newSignal: Signal.Signal<any, any> = Signal.new()
+
+    self._pathSignals[path]:Connect(function(newValue: any, oldValue: any)
+        newSignal:Fire(newValue, oldValue)
+    end)
+
+    return newSignal
 end
 
 --[=[

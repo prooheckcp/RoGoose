@@ -34,8 +34,8 @@ type Trove = typeof(Trove.new())
 local Model = {}
 Model.__index = Model
 Model.type = "DatabaseModel"
-Model.PlayerAdded = nil :: Signal.Signal<Player, {[string]: any}, boolean>?
-Model.PlayerRemoving = nil :: Signal.Signal<Player, {[string]: any}>?
+Model.PlayerAdded = nil :: Signal.Signal<(Player, Profile.Profile, boolean)->nil>?
+Model.PlayerRemoving = nil :: Signal.Signal<(Player, Profile.Profile)-> nil>?
 Model._trove = nil :: Trove
 Model._profiles = {} :: {[string]: Profile.Profile}
 Model._schema = Schema.new({}) :: Schema.Schema
@@ -796,6 +796,7 @@ function Model:_UnloadProfile(player: Player): ()
     end
 
     self:SaveProfile(player)
+    self.PlayerRemoving:Fire(player, profile)
     profile:Release()
     self._profiles[profile._key] = nil
 end
