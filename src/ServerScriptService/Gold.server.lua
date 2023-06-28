@@ -3,9 +3,9 @@ local RunService = game:GetService("RunService")
 
 local RoGoose = require(ReplicatedStorage.RoGoose)
 
-local ModelLoader = require(script.Parent.ModelLoader)
+local Currencies: RoGoose.Model = RoGoose:GetModelAsync("Currencies")
 
-ModelLoader.Currencies.PlayerAdded:Connect(function(player: Player, data: RoGoose.Profile, firstTime: boolean)
+Currencies.PlayerAdded:Connect(function(player: Player, data: RoGoose.Profile, firstTime: boolean)
     local leaderstats = Instance.new("Folder")
     leaderstats.Name = "leaderstats"
     leaderstats.Parent = player
@@ -15,16 +15,14 @@ ModelLoader.Currencies.PlayerAdded:Connect(function(player: Player, data: RoGoos
     gold.Value = data:Get("Gold")
     gold.Parent = leaderstats
 
-    print(data:Get("Gold"))
-
     data:GetDataChangedSignal("Gold"):Connect(function(newGold: number, oldGold: number)
         --print("Previous Gold: ", oldGold, "New Gold: ", newGold)
         gold.Value = newGold
     end)
 end)
 
-ModelLoader.Currencies.PlayerRemoving:Connect(function(player: Player, data, firstTime: boolean)
-   -- print(player, data, firstTime)
+Currencies.PlayerRemoving:Connect(function(player: Player, data)
+    print("Player left: ", player.Name)
 end)
 
 -- Simple coin game
@@ -53,7 +51,7 @@ RunService.Heartbeat:Connect(function()
         if (part.Parent :: Instance):FindFirstChild("Humanoid") then
             local player = game.Players:GetPlayerFromCharacter(part.Parent)
             if player then
-                local data = ModelLoader.Currencies:GetPlayerProfile(player)
+                local data = Currencies:GetPlayerProfile(player)
                 data:Increment("Gold", 1)
 
                 newCoin:Destroy()

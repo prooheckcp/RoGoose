@@ -45,6 +45,23 @@ RoGoose._lastSave = tick() :: number
 RoGoose._tasks = {} :: {[string]: boolean} -- This caches tasks currently being done by the library, it shouldn't close the server before they all finish! (Should only bound tasks that are of severe importance)
 
 --[=[
+    Gets a Rogoose Model by the name of the model. It's important to remember that this function yields so
+    it should be used with caution.
+
+    @yield
+    @param modelName string -- The name of the model to get
+
+    @return Model.Model
+]=]
+function RoGoose:GetModelAsync(modelName: string): Model.Model
+    while not self._cachedModels[modelName] do
+        task.wait()
+    end
+
+    return self._cachedModels[modelName]
+end
+
+--[=[
     This is the main function of the program and it is used to set up some events
     and initialize the RoGoose object.
 
