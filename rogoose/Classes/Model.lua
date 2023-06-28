@@ -35,6 +35,7 @@ local Model = {}
 Model.__index = Model
 Model.type = "DatabaseModel"
 Model.PlayerAdded = Signal.new() :: Signal.Signal<Player, Profile.Profile, boolean>
+Model.ProfileAdded = Signal.new() :: Signal.Signal<string, Profile.Profile, boolean>
 Model.PlayerRemoving = Signal.new() :: Signal.Signal<Player, Profile.Profile>
 Model._trove = nil :: Trove
 Model._profiles = {} :: {[string]: Profile.Profile}
@@ -68,6 +69,7 @@ function Model.new(modelName: string, schema: Schema.Schema, _options: Options.O
 
     self.PlayerAdded = Signal.new()
     self.PlayerRemoving = Signal.new()
+    self.ProfileAdded = Signal.new()
 
     Signals.ModelCreated:Fire(self)
 
@@ -637,7 +639,7 @@ end
 
     @return ()
 ]=]
-function Model:LoadProfile(key: string | Player): ()
+function Model:LoadProfile(key: string | Player): Profile.Profile?
     local keyType: string = KeyType(key)
     local accessKey: string = GetKey(key, self._name)
 
@@ -645,26 +647,37 @@ function Model:LoadProfile(key: string | Player): ()
         if keyType == "Player" then
             (key :: Player):Kick(KickMessages.SessionLocked)
         elseif keyType == "string" then
-            
+            Warning(string.format(Warnings.IsSessionLocked, accessKey, self._name))
         end
-
+        
         return
     end
 
-    self:_GetAsync(accessKey):andThen(function(result: any?)
-        if keyType == "Player" then
-            -- Create player's profile
-            local profile: Profile.Profile = self:_CreateProfileByPlayer(key, result, accessKey)
-            profile:Lock()
-        elseif keyType == "string" then
+    local success: boolean, result: any? = self:_GetAsync(accessKey):await()
 
-        end
-    end, function()
+    if not success then
         -- Kick the player
         if keyType == "Player" then
             (key :: Player):Kick(Errors.RobloxServersDown)
         end
-    end)
+
+        return nil
+    end
+
+    if keyType == "Player" then
+        -- Create player's profile
+        local profile: Profile.Profile = self:_CreateProfileByPlayer(key, result, accessKey)
+        profile:Lock()
+
+        return profile
+    elseif keyType == "string" then
+        local profile: Profile.Profile = self:_CreateProfileByString(accessKey, result)
+        profile:Lock()
+
+        return profile
+    end
+
+    return nil
 end
 
 --[=[
@@ -728,7 +741,7 @@ end
 ]=]
 function Model:_GetStringProfile(key: string): Profile.Profile?
     AssertType(key, "key", "string")
-    
+
     local profile: Profile.Profile? = nil
     
     local counter: number = 0
@@ -779,6 +792,39 @@ function Model:_FilterResult(result: any?): any
     return AssertSchema(self._schema:Get(), result)
 end
 
+--[=[
+    Creates a profile with a string
+
+    @private
+
+    @param key string -- The key to create the profile with
+    @param data any? -- The data to create the profile with
+
+    @return Profile -- Returns the profile that was just created
+]=]
+function Model:_CreateProfileByString(key: string, data: any?): Profile.Profile
+    if self._profiles[key] then
+        return self._profiles[key]
+    end
+
+    local firstTime: boolean = data == nil
+    local profile: Profile.Profile = Profile.new()
+    profile._key = key
+    profile._dataStore = self._dataStore
+
+    if firstTime then
+        local schemaCopy: {[string]: any} = DeepCopy(self._schema:Get())
+        profile._data = schemaCopy
+    else
+        profile._data = AssertSchema(self._schema:Get(), data)
+    end
+
+    self._profiles[key] = profile
+    self.ProfileAdded:Fire(key, profile, firstTime)
+
+    return profile
+end
+
 --[[
     Player Managed DataStore
     ====================
@@ -795,6 +841,10 @@ end
     @return Profile -- Returns the profile that was just created
 ]=]
 function Model:_CreateProfileByPlayer(player: Player, data: any?, key: string): Profile.Profile
+    if self._profiles[key] then
+        return self._profiles[key]
+    end
+
     local firstTime: boolean = data == nil
     local profile: Profile.Profile = Profile.new()
     profile._key = key
