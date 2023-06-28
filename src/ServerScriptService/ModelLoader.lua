@@ -12,17 +12,8 @@ local currenciesSchema = RoGoose.Schema.new({
     }
 })
 
-local itemsSchema = RoGoose.Schema.new({
-    Swords = {},
-    Bows = {},
-})
-
-local ServerSchema = RoGoose.Schema.new({
-    TotalGold = 5,
-    TotalGems = 3,
-    GlobalWallet = {
-        Yen = 0,
-    }
+local GlobalCounter = RoGoose.Schema.new({
+    GlobalCounter = 0
 })
 
 return {
@@ -30,7 +21,7 @@ return {
     --Items = RoGoose.Model.new("Items", itemsSchema),
 
     
-    ServerSchema = RoGoose.Model.new("ServerSchema", ServerSchema, Options.new({
+    GlobalCounter = RoGoose.Model.new("GlobalCounter", GlobalCounter, Options.new({
         modelType = ModelType.String
     })),
 }
