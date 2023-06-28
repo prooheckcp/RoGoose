@@ -557,8 +557,6 @@ end
     @return Profile
 ]=]
 function Model:GetProfile(key: string | Player): Profile.Profile?
-    AssertType(key, "key", "string")
-
     local keytype: string = KeyType(key)
 
     if keytype == "Player" then
@@ -729,6 +727,8 @@ end
     @return Profile
 ]=]
 function Model:_GetStringProfile(key: string): Profile.Profile?
+    AssertType(key, "key", "string")
+    
     local profile: Profile.Profile? = nil
     
     local counter: number = 0

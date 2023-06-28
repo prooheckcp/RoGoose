@@ -50,8 +50,13 @@ RunService.Heartbeat:Connect(function()
         if (part.Parent :: Instance):FindFirstChild("Humanoid") then
             local player = game.Players:GetPlayerFromCharacter(part.Parent)
             if player then
-                local data = Currencies:GetPlayerProfile(player)
-                data:Increment("Gold", 1)
+                local profile: RoGoose.Profile? = Currencies:GetProfile(player)
+
+                if not profile then
+                    return
+                end
+
+                profile:Increment("Gold", 1)
 
                 newCoin:Destroy()
                 coinCount -= 1
