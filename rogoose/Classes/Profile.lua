@@ -201,7 +201,7 @@ function Profile:AddElement<T>(path: string, value: T): any
     end
 
     if GetType(array) ~= "table" then
-        warn("Can only add elements to tables")
+        Warning("Can only add elements to tables")
         return
     end
 
@@ -255,18 +255,28 @@ function Profile:RemoveElementByIndex<T>(path: string, arrayIndex: any): any
         Warning(warningMessage)
     end
 
-    if GetType(array) ~= "table" then
-        warn("Can only add elements to tables")
+    local objectType: string = GetType(array)
+
+    if objectType ~= "table" and objectType ~= "dictionary" then
+        Warning("Can only add elements to tables")
         return
     end
 
-    for key: any in array do
-        if key ~= arrayIndex then
-            continue
+    if objectType == "dictionary" then
+        for key: any in array do
+            if key ~= arrayIndex then
+                continue
+            end
+    
+            array[key] = nil
+            break
         end
+    elseif objectType == "table" then
+        AssertType(arrayIndex, "arrayIndex", "number")
 
-        array[key] = nil
-        break
+        if #array >= arrayIndex then
+            table.remove(array, arrayIndex)
+        end
     end
 
     return array

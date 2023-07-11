@@ -13,7 +13,8 @@ local currenciesSchema = RoGoose.Schema.new({
 })
 
 local GlobalCounter = RoGoose.Schema.new({
-    GlobalCounter = 0
+    GlobalCounter = 0,
+    BannedPlayers = {"Hello"},
 })
 
 return {

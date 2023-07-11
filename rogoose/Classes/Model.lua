@@ -398,17 +398,17 @@ function Model:Increment(key: string | Player, path: string, amount: number): (n
     AssertType(path, "path", "string")
     AssertType(amount, "amount", "number")
 
-    if self:GetModelType() == ModelType.Player then
+    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
         AssertType(key, "key", "Player")
 
-        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
+        local profile: Profile.Profile? = self:GetProfile(key)
 
         if not profile then
             return 0, 0
         end
 
         return profile:Increment(path, amount)
-    else
+    elseif self:GetModelType() == ModelType.Classic then
         AssertType(key, "key", "string")
 
         local previousValue: number = 0

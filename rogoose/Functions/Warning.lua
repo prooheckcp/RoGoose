@@ -13,13 +13,14 @@ local Settings = require(script.Parent.Parent.Constants.Settings)
 local function Warning(message: string): ()
     if RunService:IsStudio() then
         if Settings.OutputWarningsInStudio then
-            warn(Warnings.Header..message)
+            warn(Warnings.Header..message.."\n"..debug.traceback())
         end
+
         return
     end
     
     if Settings.OutputWarningsInRelease then
-        warn(Warnings.Header..message)
+        warn(Warnings.Header..message.."\n"..debug.traceback())
     end
 end
 
