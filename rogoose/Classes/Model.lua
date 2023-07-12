@@ -119,9 +119,7 @@ end
 function Model:Get<T>(key: Player | string, path: string): T?
     AssertType(path, "path", "string")
 
-    if self:GetModelType() == ModelType.Player then
-        AssertType(key, "key", "Player")
-
+    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
         local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if not profile then
@@ -129,7 +127,7 @@ function Model:Get<T>(key: Player | string, path: string): T?
         end
 
         return profile:Get(path)
-    else
+    elseif self:GetModelType() == ModelType.Classic then
         AssertType(key, "key", "string")
 
         local success: boolean, result: any = self:_GetAsync(key):await()
@@ -142,6 +140,8 @@ function Model:Get<T>(key: Player | string, path: string): T?
 
         return GetNestedValue(result, path)
     end
+
+    return nil
 end
 
 --[=[
@@ -184,9 +184,7 @@ end
 function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
     AssertType(path, "path", "string")
 
-    if self:GetModelType() == ModelType.Player then
-        AssertType(key, "key", "Player")
-
+    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
         local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if not profile then
@@ -194,7 +192,7 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
         end
 
         return profile:Set(path, newValue)
-    else
+    elseif self:GetModelType() == ModelType.Classic then
         AssertType(key, "key", "string")
 
         local success: boolean, updateResult: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
@@ -265,14 +263,14 @@ end
     @return any -- The array that the value was added to
 ]=]
 function Model:AddElement<T>(key: string | Player, index: string, value: T): any
-    if KeyType(key) == "Player" then
-        local profile: Profile.Profile = self:_GetPlayerProfile(key)
+    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
+        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if profile == nil then return nil end
 
         profile:AddElement(index, value)
-    else
-
+    elseif self:GetModelType() == ModelType.Classic then
+        -- TO DO ADD TO ELEMENT
     end
 end
 
@@ -314,14 +312,14 @@ end
     @return any -- The array that the value was removed from
 ]=]
 function Model:RemoveElementByIndex<T>(key: string | Player, index: string, arrayIndex: any): any
-    if KeyType(key) == "Player" then
-        local profile: Profile.Profile = self:_GetPlayerProfile(key)
+    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
+        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if profile == nil then return nil end
 
         profile:RemoveElementByIndex(index, arrayIndex)
-    else
-
+    elseif self:GetModelType() == ModelType.Classic then
+        -- TO DO REMOVE BY INDEX
     end
 end
 
@@ -355,15 +353,17 @@ end
     @return boolean -- Whether or not the value exists
 ]=]
 function Model:Exists(key: string | Player, index: string): boolean
-    if KeyType(key) == "Player" then
+    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
         local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if profile == nil then return false end
 
         return profile:Exists(index)
-    else
+    elseif self:GetModelType() == ModelType.Classic then
         return self:Get(key, index) ~= nil
     end
+
+    return false
 end
 
 --[=[
@@ -399,8 +399,6 @@ function Model:Increment(key: string | Player, path: string, amount: number): (n
     AssertType(amount, "amount", "number")
 
     if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
-        AssertType(key, "key", "Player")
-
         local profile: Profile.Profile? = self:GetProfile(key)
 
         if not profile then
@@ -478,9 +476,7 @@ function Model:Subtract(key: string | Player, path: string, amount: number): (nu
     AssertType(path, "path", "string")
     AssertType(amount, "amount", "number")
 
-    if self:GetModelType() == ModelType.Player then
-        AssertType(key, "key", "Player")
-
+    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
         local profile: Profile.Profile? = self:_GetPlayerProfile(key)
 
         if not profile then
@@ -488,7 +484,7 @@ function Model:Subtract(key: string | Player, path: string, amount: number): (nu
         end
 
         return profile:Subtract(path, amount)
-    else
+    elseif self:GetModelType() == ModelType.Classic then
         AssertType(key, "key", "string")
 
         local previousValue: number = 0
