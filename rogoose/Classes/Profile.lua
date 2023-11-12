@@ -459,10 +459,10 @@ end
     @return boolean, any? -- Whether or not the save was successful and the new value
 ]=]
 function Profile:Save(): (boolean, any?)
-    local success: boolean, newValue: any = UpdateAsync(self._key, self._data, self._dataStore)
     local processId: string = HttpService:GenerateGUID(false)
-
     Signals.AddTask:Fire(processId)
+    
+    local success: boolean, newValue: any = UpdateAsync(self._key, self._data, self._dataStore)
 
     if success then
         self._lastSave = os.time()
@@ -477,6 +477,8 @@ end
     Locks the profile. This will make it so that this profile cannot be loaded until it gets released.
     This is useful for when you want to make sure that the profile is not loaded multiple times.
 
+    -- Don't use if you don't know what you are doing
+
     @return boolean, number
 ]=]
 function Profile:Lock(): (boolean, number)
@@ -485,6 +487,8 @@ end
 
 --[=[
     Releases the profile. This will make it so that this profile can be loaded again.
+
+    -- Don't use if you don't know what you are doing
 
     @return 
 ]=]

@@ -29,6 +29,8 @@ local Settings = require(script.Parent.Parent.Constants.Settings)
 
 local SessionLockStore = DataStoreService:GetDataStore(Keys.SessionLock)
 
+local models = {}
+
 type Trove = typeof(Trove.new())
 
 local Model = {}
@@ -42,7 +44,6 @@ Model._profiles = {} :: {[string]: Profile.Profile}
 Model._schema = Schema.new({}) :: Schema.Schema
 Model._dataStore = nil :: DataStore?
 Model._name = ""
-Model._trove = Trove.new() :: Trove
 Model._options = Options.new()
 Model._modelType = ModelType.Player :: ModelType.ModelType
 
@@ -56,6 +57,10 @@ Model._modelType = ModelType.Player :: ModelType.ModelType
     @return Model
 ]=]
 function Model.new(modelName: string, schema: Schema.Schema, _options: Options.Options?)
+    if models[modelName] then
+        return models[modelName]
+    end
+
     local options: Options.Options = _options or Options.new()
 
     local self = setmetatable({}, Model)
@@ -72,6 +77,12 @@ function Model.new(modelName: string, schema: Schema.Schema, _options: Options.O
     self.ProfileAdded = Signal.new()
 
     Signals.ModelCreated:Fire(self)
+
+    self._trove:Add(self.PlayerAdded)
+    self._trove:Add(self.PlayerRemoving)
+    self._trove:Add(self.ProfileAdded)
+
+    models[modelName] = self
 
     return self
 end
@@ -674,6 +685,28 @@ function Model:LoadProfile(key: string | Player): Profile.Profile?
     end
 
     return nil
+end
+
+--[[
+    Clears the model from memory
+
+    @return ()
+]]
+function Model:Destroy(): ()
+    local modelName: string = self._name
+
+    self._trove:Destroy()
+    self._trove = nil
+    self._profiles = nil
+    self._schema = nil
+    self._dataStore = nil
+    self._name = nil
+    self._options = nil
+    self._modelType = nil
+
+    models[modelName] = nil
+
+    Signals.ModelDestroyed:Fire(modelName)
 end
 
 --[=[

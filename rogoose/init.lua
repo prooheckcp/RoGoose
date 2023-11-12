@@ -78,6 +78,10 @@ function RoGoose:_Init(): ()
         self:_AddModel(model)
     end)
 
+    Signals.ModelDestroyed:Connect(function(modelName: string)
+        self:_RemoveModel(modelName)
+    end)
+
     for _, player: Player in Players:GetPlayers() do
         self:_PlayerJoined(player)
     end
@@ -271,6 +275,23 @@ function RoGoose:_AddModel(model: Model.Model): ()
     if model._modelType == ModelType.Player then
         self:_LoadPlayerModel(model)
     end
+end
+
+--[=[
+    Removes the model from the cache
+
+    @private
+
+    @param modelName string
+
+    @return ()
+]=]
+function RoGoose:_RemoveModel(modelName: string): ()
+    if not self._cachedModels[modelName] then
+        return
+    end
+
+    self._cachedModels[modelName] = nil
 end
 
 --[[

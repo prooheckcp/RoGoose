@@ -41,6 +41,7 @@ profile:Lock()
     printCounter()    
 ]]
 
+--[[
 print("Initial")
 printCounter()
 print("==Increment==")
@@ -59,4 +60,5 @@ GlobalCounter:AddElement("Test", "BannedPlayers", "World")
 printCounter()
 print("==RemoveElement==")
 GlobalCounter:RemoveElementByIndex("Test", "BannedPlayers", 2)
-printCounter()    
+printCounter()        
+]]

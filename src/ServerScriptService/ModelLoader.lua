@@ -19,9 +19,7 @@ local GlobalCounter = RoGoose.Schema.new({
 
 return {
     Currencies = RoGoose.Model.new("Currencies", currenciesSchema),
-    --Items = RoGoose.Model.new("Items", itemsSchema),
-
-    
+    Currencies2 = RoGoose.Model.new("Currencies", currenciesSchema),
     GlobalCounter = RoGoose.Model.new("GlobalCounter", GlobalCounter, Options.new({
         modelType = ModelType.String
     })),

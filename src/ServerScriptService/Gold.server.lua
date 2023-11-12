@@ -2,6 +2,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local RoGoose = require(ReplicatedStorage.RoGoose)
+local ModelLoader = require(script.Parent.ModelLoader)
 
 local Currencies: RoGoose.Model = RoGoose:GetModelAsync("Currencies")
 
@@ -57,7 +58,6 @@ RunService.Heartbeat:Connect(function()
                 end
 
                 profile:Increment("Gold", 1)
-
                 newCoin:Destroy()
                 coinCount -= 1
             end
