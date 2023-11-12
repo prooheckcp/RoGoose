@@ -8,8 +8,14 @@ local ModelLoader = require(ServerScriptService.Server.ModelLoader)
 local function playerAdded(player: Player)
     local profile: RoGoose.Profile? = ModelLoader.Currencies:GetPlayerProfile(player)
 
+    print(">>1")
+
     if not profile then
         return
+    end
+    print(">>2")
+    for _ = 1, 50 do
+        profile:Save()
     end
 
     --[[

@@ -464,6 +464,8 @@ function Profile:Save(): (boolean, any?)
     
     local success: boolean, newValue: any = UpdateAsync(self._key, self._data, self._dataStore)
 
+    print("Save!")
+
     if success then
         self._lastSave = os.time()
     end
