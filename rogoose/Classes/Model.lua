@@ -130,15 +130,7 @@ end
 function Model:Get<T>(key: Player | string, path: string): T?
     AssertType(path, "path", "string")
 
-    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
-        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
-
-        if not profile then
-            return nil
-        end
-
-        return profile:Get(path)
-    elseif self:GetModelType() == ModelType.Classic then
+    if self:GetModelType() == ModelType.Classic then
         AssertType(key, "key", "string")
 
         local success: boolean, result: any = self:_GetAsync(key):await()
@@ -149,10 +141,24 @@ function Model:Get<T>(key: Player | string, path: string): T?
 
         self:_FilterResult(result)
 
-        return GetNestedValue(result, path)
+        return GetNestedValue(result, path)        
     end
 
-    return nil
+    if self:GetModelType() == ModelType.Player then
+        AssertType(key, "key", "Player")
+    end 
+
+    if self:GetModelType() == ModelType.String then
+        AssertType(key, "key", "string")
+    end
+    
+    local profile: Profile.Profile? = self:_GetPlayerProfile(key)
+
+    if not profile then
+        return nil
+    end
+
+    return profile:Get(path)
 end
 
 --[=[
@@ -195,15 +201,7 @@ end
 function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
     AssertType(path, "path", "string")
 
-    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
-        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
-
-        if not profile then
-            return nil
-        end
-
-        return profile:Set(path, newValue)
-    elseif self:GetModelType() == ModelType.Classic then
+    if self:GetModelType() == ModelType.Classic then
         AssertType(key, "key", "string")
 
         local success: boolean, updateResult: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
@@ -235,7 +233,21 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
         end
     end
 
-    return nil
+    if self:GetModelType() == ModelType.Player then
+        AssertType(key, "key", "Player")
+    end 
+
+    if self:GetModelType() == ModelType.String then
+        AssertType(key, "key", "string")
+    end
+
+    local profile: Profile.Profile? = self:_GetPlayerProfile(key)
+
+    if not profile then
+        return nil
+    end
+
+    return profile:Set(path, newValue)
 end
 
 --[=[

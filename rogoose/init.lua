@@ -14,6 +14,10 @@ local KickMessages = require(script.Constants.KickMessages)
 local Warnings = require(script.Constants.Warnings)
 local Warning = require(script.Functions.Warning)
 
+-- We add this because in case a player leaves the game and shuts down the server it might take a whole cycle before
+-- it manages to cache the saving task. This prevents data loss in that specific scenario.
+local MINIMUM_SERVER_YIELD: number = 1
+
 --[=[
     @class RoGoose
 
@@ -107,8 +111,10 @@ function RoGoose:_Init(): ()
     end)
 
     game:BindToClose(function()
-        while next(self._tasks) ~= nil do
-            task.wait()
+        local timer: number = 0
+
+        while next(self._tasks) ~= nil and timer < MINIMUM_SERVER_YIELD do
+            timer += task.wait()
         end
 
         Warning(Warnings.FinishedServerTasks)

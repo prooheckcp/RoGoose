@@ -5,18 +5,17 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local RoGoose = require(ReplicatedStorage.RoGoose)
 local ModelLoader = require(ServerScriptService.Server.ModelLoader)
 
+local Currencies = RoGoose:GetModelAsync("Currencies")
+
 local function playerAdded(player: Player)
     local profile: RoGoose.Profile? = ModelLoader.Currencies:GetPlayerProfile(player)
-
-    print(">>1")
 
     if not profile then
         return
     end
-    print(">>2")
-    for _ = 1, 50 do
-        profile:Save()
-    end
+
+    print("Gold: ", Currencies:Get(player, "Gold"))
+
 
     --[[
         ==================== Testing Profile ====================
