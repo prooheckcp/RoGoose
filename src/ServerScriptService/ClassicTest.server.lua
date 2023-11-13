@@ -15,7 +15,7 @@ type Model = RoGoose.Model
 
 local classicStore: Model = RoGoose:GetModelAsync("ClassicStore")
 
---print("Current Gold:", classicStore:Get("test", "Gold"))
---print("Set Gold to 100")
+print("Current Gold:", classicStore:Get("test", "Gold"))
+print("Set Gold to 100")
 classicStore:Set("test", "Gold", 100)
---print("Current Gold:", classicStore:Get("test", "Gold2"))
+print("Current Gold:", classicStore:Get("test", "Gold"))

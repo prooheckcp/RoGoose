@@ -141,7 +141,13 @@ function Model:Get<T>(key: Player | string, path: string): T?
             return nil
         end
 
-        return GetNestedValue(result, path)
+        local value: T, _, warningMessage: string? = GetNestedValue(result, path)
+
+        if warningMessage then
+            Warning(warningMessage)
+        end
+
+        return value
     end
 
     if self:GetModelType() == ModelType.Player then
