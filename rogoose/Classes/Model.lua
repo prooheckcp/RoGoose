@@ -205,19 +205,20 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
         AssertType(key, "key", "string")
 
         local warningMessage: string? = nil
+        local oldValue = nil
 
         local success: boolean, result: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
             oldData = self:_FilterResult(oldData)
 
-            local value: T, outterTable: {[string]: any}, _warningMessage: string? = GetNestedValue(oldData, path)
+            local value: T, outterTable: {[string]: any}, _warningMessage: string?, lastIndex: string = GetNestedValue(oldData, path)
 
             if _warningMessage then
                 warningMessage = _warningMessage
                 return oldData
             end 
 
-            print("[test]", value, outterTable, _warningMessage)
-            --outterTable[value] = newValue
+            outterTable[lastIndex] = newValue
+            oldValue = value
 
             return oldData
         end)
@@ -233,7 +234,7 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
 
         self:_FilterResult(result)
 
-        return GetNestedValue(result, path)
+        return oldValue
     end
 
     if self:GetModelType() == ModelType.Player then
