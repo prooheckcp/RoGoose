@@ -134,18 +134,12 @@ function Model:Get<T>(key: Player | string, path: string): T?
         AssertType(key, "key", "string")
 
         local success: boolean, result: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
-            if oldData == nil then
-                oldData = DeepCopy(self._schema:Get())
-            end
-
-            return oldData
+            return self:_FilterResult(oldData)
         end)
 
         if not success then
             return nil
         end
-
-        self:_FilterResult(result)
 
         return GetNestedValue(result, path)
     end
@@ -210,15 +204,28 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
     if self:GetModelType() == ModelType.Classic then
         AssertType(key, "key", "string")
 
-        local success: boolean, result: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
-            if oldData == nil then
-                oldData = DeepCopy(self._schema:Get())
-            end
+        local warningMessage: string? = nil
 
-            local value: any, outterTable: {[string]: any} = GetNestedValue(result, path)
+        local success: boolean, result: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
+            oldData = self:_FilterResult(oldData)
+
+            local value: T, outterTable: {[string]: any}, _warningMessage: string? = GetNestedValue(oldData, path)
+
+            if _warningMessage then
+                warningMessage = _warningMessage
+                return oldData
+            end 
+
+            print("[test]", value, outterTable, _warningMessage)
+            --outterTable[value] = newValue
 
             return oldData
         end)
+
+        if warningMessage then
+            Warning(warningMessage)
+            return nil
+        end
 
         if not success then
             return nil

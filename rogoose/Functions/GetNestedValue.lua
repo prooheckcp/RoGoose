@@ -4,9 +4,9 @@
     @param data {[string]: any} -- The table to get the value from
     @param path string -- The path to the value
 
-    @return (any, {[string]: any}, string?) -- The value and the table that the value is in
+    @return (any, {[string]: any}, string?, string) -- Returns: value|outterTable|errorMessage|lastIndex
 ]]
-local function GetNestedValue(data: {[string]: any}, path: string): (any, {[string]: any}, string?)
+local function GetNestedValue(data: {[string]: any}, path: string): (any, {[string]: any}, string?, string)
 	local indexes: {string} = string.split(path, ".")
 	local lastTable: {[string]: any} = data
 	
@@ -16,17 +16,17 @@ local function GetNestedValue(data: {[string]: any}, path: string): (any, {[stri
 		local currentValue: any = lastTable[currentIndex]
 		
 		if currentValue == nil then
-			return nil, lastTable, currentIndex.." is not a valid member of "..lastIndex
+			return nil, lastTable, currentIndex.." is not a valid member of "..lastIndex, currentIndex
 		end
 		
 		if i == #indexes then
-			return currentValue, lastTable
+			return currentValue, lastTable, nil, currentIndex
 		else
 			lastTable = currentValue
 		end
 	end
 
-    return nil, lastTable
+    return nil, lastTable, nil, "" -- Didn't find anything
 end
 
 return GetNestedValue
