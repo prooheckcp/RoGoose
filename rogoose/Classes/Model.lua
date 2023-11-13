@@ -141,7 +141,7 @@ function Model:Get<T>(key: Player | string, path: string): T?
 
         self:_FilterResult(result)
 
-        return GetNestedValue(result, path)        
+        return GetNestedValue(result, path)
     end
 
     if self:GetModelType() == ModelType.Player then
@@ -285,16 +285,61 @@ end
 
     @return any -- The array that the value was added to
 ]=]
-function Model:AddElement<T>(key: string | Player, index: string, value: T): any
-    if self:GetModelType() == ModelType.Player or self:GetModelType() == ModelType.String then
-        local profile: Profile.Profile? = self:_GetPlayerProfile(key)
+function Model:AddElement<T>(key: string | Player, path: string, value: T): any
+    AssertType(path, "path", "string")
 
-        if profile == nil then return nil end
+    if self:GetModelType() == ModelType.Classic then
+        AssertType(key, "key", "string")
 
-        profile:AddElement(index, value)
-    elseif self:GetModelType() == ModelType.Classic then
-        -- TO DO ADD TO ELEMENT
+        local success: boolean, updateResult: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
+            oldData = self:_FilterResult(oldData)
+
+            local oldValue: any, outterScore: {[string]: any}, warningMessage: string? = GetNestedValue(oldData, path)
+            local strings: {string} = string.split(path, ".")
+            local lastIndex: string = strings[#strings]
+
+            if warningMessage then
+                Warning(warningMessage)
+                return nil
+            end
+
+            print(outterScore, oldValue)
+
+            --table.insert(outterScore, value)
+
+            --[[
+           if oldValue then
+                if GetType(newValue) ~= GetType(oldValue) then
+                    Warning(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(newValue))
+                    return oldData
+                end
+
+                outterScore[lastIndex] = newValue
+            end                
+            ]]
+ 
+            
+            return oldData
+        end)
+
+        if success then
+            return updateResult
+        end
     end
+
+    if self:GetModelType() == ModelType.Player then
+        AssertType(key, "key", "Player")
+    end 
+
+    if self:GetModelType() == ModelType.String then
+        AssertType(key, "key", "string")
+    end
+
+    local profile: Profile.Profile? = self:_GetPlayerProfile(key)
+
+    if profile == nil then return nil end
+
+    return profile:AddElement(path, value)
 end
 
 --[=[

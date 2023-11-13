@@ -1,3 +1,13 @@
+--[[
+	Description			Contains a simple coin minigame to test the library functionalities!
+
+	Author				Vasco S. (prooheckcp)
+	Last updated on		13rd November 2023
+	
+	Copyright
+		All rights reserved 2023, @prooheckcp
+]]
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
