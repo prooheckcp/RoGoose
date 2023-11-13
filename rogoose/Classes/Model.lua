@@ -754,6 +754,13 @@ function Model:LoadProfile(key: string | Player): Profile.Profile?
     return nil
 end
 
+--[=[
+    TO-DO
+]=]
+function Model:GetDataChangedSignal()
+    -- TO DO
+end
+
 --[[
     Clears the model from memory
 

@@ -1,0 +1,107 @@
+========= CLASSIC =========
+- Model
+	Manipulation Methods
+		- Get ✔️
+		- Set ✔️
+		- AddElement
+		- RemoveElementByIndex
+		- Exists
+		- Increment
+		- Subtract
+
+	Utility
+		- GetProfile
+		- GetPlayerProfile
+		- GetModelType
+
+	Data Saving
+		- ReleaseProfile
+		- LockProfile
+		- SaveAllProfiles
+		- SaveProfile
+		- LoadProfile
+
+========= STRING =========
+- Profile
+	Manipulation Methods
+		- Get
+		- Set
+		- AddElement
+		- RemoveElementByIndex
+		- Exists
+		- Increment
+		- Subtract
+	
+	Utility
+		- GetPlayer
+		- GetDataChangedSignal
+	
+	Data Saving
+		- Save
+		- Lock
+		- Release
+
+- Model
+	Manipulation Methods
+		- Get ✔️
+		- Set
+		- AddElement
+		- RemoveElementByIndex
+		- Exists
+		- Increment
+		- Subtract
+
+	Utility
+		- GetProfile
+		- GetPlayerProfile
+		- GetModelType
+
+	Data Saving
+		- ReleaseProfile
+		- LockProfile
+		- SaveAllProfiles
+		- SaveProfile
+		- LoadProfile
+
+========= PLAYER =========
+- Profile
+	Manipulation Methods
+		- Get
+		- Set
+		- AddElement
+		- RemoveElementByIndex
+		- Exists
+		- Increment
+		- Subtract
+	
+	Utility
+		- GetPlayer
+		- GetDataChangedSignal
+	
+	Data Saving
+		- Save
+		- Lock
+		- Release
+
+- Model
+	Manipulation Methods
+		- Get ✔️
+		- Set
+		- AddElement
+		- RemoveElementByIndex
+		- Exists
+		- Increment
+		- Subtract
+
+	Utility
+		- GetProfile
+		- GetPlayerProfile
+		- GetModelType
+
+	Data Saving
+		- ReleaseProfile
+		- LockProfile
+		- SaveAllProfiles
+		- SaveProfile
+		- LoadProfile
+
