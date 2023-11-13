@@ -133,7 +133,13 @@ function Model:Get<T>(key: Player | string, path: string): T?
     if self:GetModelType() == ModelType.Classic then
         AssertType(key, "key", "string")
 
-        local success: boolean, result: any = self:_GetAsync(key):await()
+        local success: boolean, result: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
+            if oldData == nil then
+                oldData = DeepCopy(self._schema:Get())
+            end
+
+            return oldData
+        end)
 
         if not success then
             return nil
@@ -204,33 +210,23 @@ function Model:Set<T>(key: string | Player, path: string, newValue: T): T?
     if self:GetModelType() == ModelType.Classic then
         AssertType(key, "key", "string")
 
-        local success: boolean, updateResult: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
-            oldData = self:_FilterResult(oldData)
-
-            local oldValue: any, outterScore: {[string]: any}, warningMessage: string? = GetNestedValue(oldData, path)
-            local strings: {string} = string.split(path, ".")
-            local lastIndex: string = strings[#strings]
-
-            if warningMessage then
-                Warning(warningMessage)
-                return nil
+        local success: boolean, result: any = UpdateAsync(key :: string, nil, self._dataStore, function(oldData: any)
+            if oldData == nil then
+                oldData = DeepCopy(self._schema:Get())
             end
 
-            if oldValue then
-                if GetType(newValue) ~= GetType(oldValue) then
-                    Warning(Warnings.ChangeWrongType.." from type "..GetType(oldValue).." to type "..GetType(newValue))
-                    return oldData
-                end
+            local value: any, outterTable: {[string]: any} = GetNestedValue(result, path)
 
-                outterScore[lastIndex] = newValue
-            end
-            
             return oldData
         end)
 
-        if success then
-            return updateResult
+        if not success then
+            return nil
         end
+
+        self:_FilterResult(result)
+
+        return GetNestedValue(result, path)
     end
 
     if self:GetModelType() == ModelType.Player then
