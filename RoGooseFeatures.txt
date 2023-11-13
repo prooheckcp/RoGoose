@@ -3,105 +3,108 @@
 	Manipulation Methods
 		- Get ✔️
 		- Set ✔️
-		- AddElement
-		- RemoveElementByIndex
-		- Exists
-		- Increment
-		- Subtract
+		- AddElement ❌
+		- RemoveElementByIndex ❌
+		- Exists ❌
+		- Increment ❌
+		- Subtract ❌
 
 	Utility
-		- GetProfile
-		- GetPlayerProfile
-		- GetModelType
+		- GetProfile ❌
+		- GetPlayerProfile ❌
+		- GetModelType ❌
+		- GetDataChangedSignal ❌
 
 	Data Saving
-		- ReleaseProfile
-		- LockProfile
-		- SaveAllProfiles
-		- SaveProfile
-		- LoadProfile
+		- ReleaseProfile ❌
+		- LockProfile ❌
+		- SaveAllProfiles ❌
+		- SaveProfile ❌
+		- LoadProfile ❌
 
 ========= STRING =========
 - Profile
 	Manipulation Methods
-		- Get
-		- Set
-		- AddElement
-		- RemoveElementByIndex
-		- Exists
-		- Increment
-		- Subtract
+		- Get ❌
+		- Set ❌
+		- AddElement ❌
+		- RemoveElementByIndex ❌
+		- Exists ❌
+		- Increment ❌
+		- Subtract ❌
 	
 	Utility
-		- GetPlayer
-		- GetDataChangedSignal
+		- GetPlayer ❌
+		- GetDataChangedSignal ❌
 	
 	Data Saving
-		- Save
-		- Lock
-		- Release
+		- Save ❌
+		- Lock ❌
+		- Release ❌
 
 - Model
 	Manipulation Methods
 		- Get ✔️
-		- Set
-		- AddElement
-		- RemoveElementByIndex
-		- Exists
-		- Increment
-		- Subtract
+		- Set ❌
+		- AddElement ❌
+		- RemoveElementByIndex ❌
+		- Exists ❌
+		- Increment ❌
+		- Subtract ❌
 
 	Utility
-		- GetProfile
-		- GetPlayerProfile
-		- GetModelType
+		- GetProfile ❌
+		- GetPlayerProfile ❌
+		- GetModelType ❌
+		- GetDataChangedSignal ❌
 
 	Data Saving
-		- ReleaseProfile
-		- LockProfile
-		- SaveAllProfiles
-		- SaveProfile
-		- LoadProfile
+		- ReleaseProfile ❌
+		- LockProfile ❌
+		- SaveAllProfiles ❌
+		- SaveProfile ❌
+		- LoadProfile ❌
 
 ========= PLAYER =========
 - Profile
 	Manipulation Methods
-		- Get
-		- Set
-		- AddElement
-		- RemoveElementByIndex
-		- Exists
-		- Increment
-		- Subtract
+		- Get ❌
+		- Set ❌
+		- AddElement ❌
+		- RemoveElementByIndex ❌
+		- Exists ❌
+		- Increment ❌
+		- Subtract ❌
 	
 	Utility
-		- GetPlayer
-		- GetDataChangedSignal
+		- GetPlayer ❌
+		- GetDataChangedSignal ❌
 	
 	Data Saving
-		- Save
-		- Lock
-		- Release
+		- Save ❌
+		- Lock ❌
+		- Release ❌
 
 - Model
 	Manipulation Methods
 		- Get ✔️
-		- Set
-		- AddElement
-		- RemoveElementByIndex
-		- Exists
-		- Increment
-		- Subtract
+		- Set ❌
+		- AddElement ❌
+		- RemoveElementByIndex ❌
+		- Exists ❌
+		- Increment ❌
+		- Subtract ❌
 
 	Utility
-		- GetProfile
-		- GetPlayerProfile
-		- GetModelType
+		- GetProfile ❌
+		- GetPlayerProfile ❌
+		- GetModelType ❌
+		- GetDataChangedSignal ❌
 
 	Data Saving
-		- ReleaseProfile
-		- LockProfile
-		- SaveAllProfiles
-		- SaveProfile
-		- LoadProfile
+		- ReleaseProfile ❌
+		- LockProfile ❌
+		- SaveAllProfiles ❌
+		- SaveProfile ❌
+		- LoadProfile ❌
 
